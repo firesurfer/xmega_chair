@@ -4,8 +4,9 @@
 #include "led.h"
 #include "uart.h"
 #include "adc.h"
+#include "powercontroller.h"
 
-
+PowerController pcontroller;
 Uart uartc0(USARTC0, PORTC,PIN3,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartc1(USARTC1, PORTC,PIN7,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartd0(USARTD0, PORTD,PIN2,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
@@ -37,6 +38,8 @@ int main(void)
     led3.set();
     led4.set();
 
+    pcontroller.power_off();
+    pcontroller.power_on();
 
     while(1)
     {
