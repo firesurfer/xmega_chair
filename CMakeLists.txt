@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 
 # Set the target AVR device
 #ATXMEGA 32A4-AU
-set(AVR_TARGET_DEVICE atxmega32a4)
+set(AVR_TARGET_DEVICE atxmega32a4u)
 
 include_directories("/usr/lib/avr/include")
 
@@ -24,6 +24,7 @@ file(GLOB HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h*)
 # Make the executable
 add_executable(chair_mega.elf ${SRC_FILES} ${HEADER_FILES})
 
+#add_subdirectory(src/usb)
 
 add_custom_target(program
     COMMAND  avrdude -c avrispmkII  -p atxmega32a4 -e -U flash:w:chair_mega.elf

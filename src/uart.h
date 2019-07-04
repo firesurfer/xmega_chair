@@ -37,12 +37,15 @@ public:
     void transmit(char* str);
     void transmit_it();
     void transmit_dma();
-
+    uint8_t read();
 
     void tx_complete_interrupt();
+    void dre_interrupt();
     void rx_complete_interrupt();
 private:
     USART_t& m_usart;
     int m_baudrate;
+
+    const uint8_t transmit_buffer_size = 10;
 
 };

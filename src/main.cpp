@@ -3,11 +3,13 @@
 #include <util/delay.h>
 #include "led.h"
 #include "uart.h"
+#include "adc.h"
+
 
 Uart uartc0(USARTC0, PORTC,PIN3,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartc1(USARTC1, PORTC,PIN7,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartd0(USARTD0, PORTD,PIN2,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
-
+ADC steeringAdc(ADCA);
 void setup_clock()
 {
     CCP = CCP_IOREG_gc;
