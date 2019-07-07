@@ -14,7 +14,28 @@ Uart::Uart(USART_t &usart, PORT_t & port, uint8_t pin, int baudrate):
     m_usart.CTRLA = USART_DREINTLVL_MED_gc | USART_RXCINTLVL_HI_gc;
 }
 
-/*void Uart::transmit(char *str)
+void Uart::transmit_it(char c)
+{
+    while(tx_buf.full());
+    tx_buf.push_back(c);
+}
+
+void Uart::transmit_it(const char *s)
+{
+    while(*s)
+    {
+        transmit_it(*s);
+        ++s;
+    }
+}
+
+void Uart::transmit_buffer_it(const uint8_t *buf, uint8_t len)
+{
+    for(uint8_t i=0;i<len;++i)
+        transmit_it(buf[i]);
+}
+
+void Uart::transmit(char *str)
 {
     while(*str)
     {
@@ -45,24 +66,13 @@ void Uart::tx_complete_interrupt()
 
 void Uart::dre_interrupt()
 {
-
-}
-
-void Uart::rx_complete_interrupt()
-{
-
-}*/
-
-//#ifdef UartC0
-ISR(USARTC0_DRE_vect){
     register uint8_t data;
     if(uartc0.tx_buf.pop_front(data)){
-        USARTC0.DATA = data;
+        m_usart.DATA = data;
     }else{
-        USARTC0.CTRLA &= ~USART_DREINTLVL_gm;
+        m_usart.CTRLA &= ~USART_DREINTLVL_gm;
     }
 }
-//ISR(USARTC0_RXC_vect){
-//    uartc0.rx_complete_interrupt();
-//}
-//#endif
+
+
+

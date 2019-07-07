@@ -36,18 +36,21 @@ class Uart
 public:
     typedef void (*rx_handler_t)(uint8_t);
     Uart(USART_t& usart, PORT_t &port, uint8_t pin, int baudrate);
-    void putc(char c){while(tx_buf.full());tx_buf.push_back(c);}
-    void puts(const char *s){while(*s){putc(*s);++s;}}
-    void write(const uint8_t *buf, uint8_t len){for(uint8_t i=0;i<len;++i)putc(buf[i]);}
-//    void transmit(char* str);
-//    void transmit_buffer(uint8_t* buffer, uint8_t length);
-//    void transmit_it();
-//    void transmit_dma();
-//    uint8_t read();
+    void transmit_it(char c);
+    void transmit_it(const char *s);
+    void transmit_buffer_it(const uint8_t *buf, uint8_t len);
+    void transmit(char* str);
+    void transmit_buffer(uint8_t* buffer, uint8_t length);
 
-//    void tx_complete_interrupt();
-//    void dre_interrupt();
-    inline void rx_complete_interrupt(){if(rx_handler)rx_handler(m_usart.DATA);}//Maybe get byte via param from ISR instead of m_usart indirect read
+    uint8_t read();
+    void tx_complete_interrupt();
+    void dre_interrupt();
+
+    inline void rx_complete_interrupt()
+    {
+        if(rx_handler)
+            rx_handler(m_usart.DATA);
+    };//Maybe get byte via param from ISR instead of m_usart indirect read
     void set_rx_handler(rx_handler_t handler);
 private:
     USART_t& m_usart;
