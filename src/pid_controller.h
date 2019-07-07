@@ -1,9 +1,13 @@
 #pragma once
 
 
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <avr/io.h>
+namespace pid_controller {
+
+
 typedef struct
 {
     int32_t sum;
@@ -21,6 +25,8 @@ typedef struct
 int16_t update(int32_t value, pid_data* data);
 
 int16_t ensure_max(int32_t update, bool * reached, pid_data* data);
+
+}
 
 
 

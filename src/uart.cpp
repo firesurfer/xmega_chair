@@ -26,10 +26,18 @@ void Uart::transmit(char *str)
     }
 }
 
+void Uart::transmit_buffer(uint8_t *buffer, uint8_t length)
+{
+    for (uint8_t i = 0; i < length;i++) {
+        while(!(m_usart.STATUS & USART_DREIF_bm));
+        m_usart.DATA = buffer[i];
+    }
+}
+
 uint8_t Uart::read()
 {
-    while( !(m_usart.STATUS & USART_RXCIF_bm) ); //Interesting DRIF didn't work.
-        return m_usart.DATA;
+    while(!(m_usart.STATUS & USART_RXCIF_bm));
+    return m_usart.DATA;
 }
 
 void Uart::tx_complete_interrupt()

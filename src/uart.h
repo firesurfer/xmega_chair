@@ -35,6 +35,7 @@ class Uart
 public:
     Uart(USART_t& usart, PORT_t &port, uint8_t pin, int baudrate);
     void transmit(char* str);
+    void transmit_buffer(uint8_t* buffer, uint8_t length);
     void transmit_it();
     void transmit_dma();
     uint8_t read();

@@ -1,5 +1,7 @@
 #include "pid_controller.h"
 
+namespace pid_controller {
+
 
 
 
@@ -51,4 +53,5 @@ int16_t ensure_max(int32_t update, bool *reached, pid_data *data)
         *reached = true;
     }
     return update;
+}
 }
