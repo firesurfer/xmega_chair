@@ -1,22 +1,20 @@
 #include "uart.h"
+#include <avr/interrupt.h>
 
 Uart::Uart(USART_t &usart, PORT_t & port, uint8_t pin, int baudrate):
-    m_usart(usart),
-    m_baudrate(baudrate)
+    m_usart(usart)
 {
-    m_usart.CTRLB = USART_RXEN_bm | USART_TXEN_bm;
-    m_usart.CTRLC = USART_CMODE_enum::USART_CMODE_ASYNCHRONOUS_gc | USART_CHSIZE_enum::USART_CHSIZE_8BIT_gc;
-
+    port.DIRSET = (1<<pin);
 
     m_usart.BAUDCTRLB = ( unsigned char ) ( baudrate>>8 );
     m_usart.BAUDCTRLA = ( unsigned char ) baudrate;
 
-    port.DIRSET = (1<<pin);
-
-
+    m_usart.CTRLB = USART_RXEN_bm | USART_TXEN_bm;
+    m_usart.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_CHSIZE_8BIT_gc;
+    m_usart.CTRLA = USART_DREINTLVL_MED_gc | USART_RXCINTLVL_HI_gc;
 }
 
-void Uart::transmit(char *str)
+/*void Uart::transmit(char *str)
 {
     while(*str)
     {
@@ -53,6 +51,18 @@ void Uart::dre_interrupt()
 void Uart::rx_complete_interrupt()
 {
 
+}*/
+
+//#ifdef UartC0
+ISR(USARTC0_DRE_vect){
+    register uint8_t data;
+    if(uartc0.tx_buf.pop_front(data)){
+        USARTC0.DATA = data;
+    }else{
+        USARTC0.CTRLA &= ~USART_DREINTLVL_gm;
+    }
 }
-
-
+//ISR(USARTC0_RXC_vect){
+//    uartc0.rx_complete_interrupt();
+//}
+//#endif
