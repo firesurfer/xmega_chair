@@ -67,7 +67,7 @@ void Uart::tx_complete_interrupt()
 void Uart::dre_interrupt()
 {
     register uint8_t data;
-    if(uartc0.tx_buf.pop_front(data)){
+    if(tx_buf.pop_front(data)){
         m_usart.DATA = data;
     }else{
         m_usart.CTRLA &= ~USART_DREINTLVL_gm;

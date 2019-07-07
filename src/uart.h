@@ -39,6 +39,7 @@ public:
     void transmit_it(char c);
     void transmit_it(const char *s);
     void transmit_buffer_it(const uint8_t *buf, uint8_t len);
+
     void transmit(char* str);
     void transmit_buffer(uint8_t* buffer, uint8_t length);
 
@@ -58,11 +59,9 @@ private:
 
     const uint8_t transmit_buffer_size = 10;
 
-public://More efficient, if ISR can write directly to ringbuf, instead of function call
+    //More efficient, if ISR can write directly to ringbuf, instead of function call
     ringbuf_t<10> tx_buf;
     //ringbuf_t<transmit_buffer_size> rx_buf;
 };
 
-extern Uart uartc0;
-extern Uart uartc1;
-extern Uart uartd0;
+
