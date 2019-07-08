@@ -23,12 +23,14 @@ struct ringbuf_t{
     typedef typename if_<BITS<=8,uint8_t,uint16_t>::type T;
     typedef uint8_t BOOL;
 
-    uint8_t data[SIZE];
     T front;
     volatile T back;
-    inline BOOL full(){return ((front+1)&MASK)==back;}
+    uint8_t data[SIZE];
+
+    inline BOOL full(){return (front+1)&MASK==back;}
     inline BOOL empty(){return front==back;}
-    inline BOOL push_back(uint8_t b){if(full())return 0;front=(front+1)&MASK;data[front]=b;return 1;}
-    inline BOOL pop_front(uint8_t &b){if(empty())return 0;back=(back+1)&MASK;b=data[back];return 1;}//cache back with register variable, because interrupt
+    inline BOOL push_back(uint8_t d){if(full())return 0;front=(T)(front+(T)1)&(T)MASK;data[front]=d;return 1;}
+    inline BOOL push_wait(uint8_t d){T f=(front+1)&MASK;while(f==back);front=f;data[f]=d;return 1;}
+    inline BOOL pop_front(uint8_t &d){T b=back;if(front==b)return 0;back=b=(b+1)&MASK;d=data[b];return 1;}//cache back with register variable, because interrupt
     inline void clear(){front=0;back=0;}
 };
