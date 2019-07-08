@@ -6,11 +6,19 @@ class PowerController
 public:
     PowerController();
     void task_switches();
-    void power_off();
-    void power_on();
+    void off();
+    void on();
+    /**
+     * @brief lock - power off and disable switches and on function
+     */
+    void lock();
+    /**
+     * @brief unlock - allow switches and on function
+     */
+    void unlock();
 private:
 
-    uint8_t task_count = 0;
+    bool m_power_on = false;
 
     PORT_t& m_power_port = PORTC;
     uint8_t m_power_left = PIN5;

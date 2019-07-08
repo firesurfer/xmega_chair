@@ -38,8 +38,8 @@ int main(void)
     led3.set();
     led4.set();
 
-    pcontroller.power_off();
-    pcontroller.power_on();
+    pcontroller.unlock();
+    pcontroller.on();
 
     while(1)
     {
