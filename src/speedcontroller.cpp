@@ -12,7 +12,7 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
 
 void SpeedController::update()
 {
-    int16_t diff_speed =  pid_controller::update(adc_to_angle(adc_poti.lastResult()), &pid_controller);
+    int16_t diff_speed =  pid_controller.update(adc_to_angle(adc_poti.lastResult()));
     speed_left_rear = speed_base;
     speed_right_rear = speed_base;
     speed_left_front = speed_base + diff_speed;

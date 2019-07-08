@@ -20,7 +20,7 @@ private:
     void send_packet(uint8_t command, uint16_t data, Uart &uart);
 
     int16_t adc_to_angle(int16_t adc);
-    pid_controller::pid_data pid_controller;
+    PidController pid_controller;
 
     int16_t speed_left_front;
     int16_t speed_left_rear;

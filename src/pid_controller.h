@@ -1,14 +1,14 @@
 #pragma once
 
-
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <avr/io.h>
-namespace pid_controller {
 
-typedef struct
-{
+class PidController{
+public:
+    PidController();//the constructor could get the PID params from the eeprom. the setter of kP,kI,kD could store the values in eeprom
+    int16_t update(int32_t value);
+
     int32_t sum;
     int32_t last_diff;
     int32_t target;
@@ -17,10 +17,4 @@ typedef struct
     int32_t kI;
     int16_t maximum;
     int32_t sum_max;
-}pid_data;
-
-int16_t update(int32_t value, pid_data* data);
-
-int16_t ensure_max(int32_t update, bool * reached, pid_data* data);
-
-}
+};

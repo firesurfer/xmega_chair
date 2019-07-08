@@ -1,55 +1,47 @@
 #include "pid_controller.h"
 
-namespace pid_controller {
+PidController::PidController():sum(0),last_diff(0),target(0){
 
+}
 
-int16_t update(int32_t value, pid_data *data)
+int16_t PidController::update(int32_t value)
 {
     //Regelabweichung
-    int32_t diff = data->target - value;
+    int32_t diff = target - value;
 
     //Regler update
-    int32_t update = data->kP * diff;
-    if (data->kI > 0)
-        update += (data->sum) * data->kI ;
-    if (data->kD > 0)
+    int32_t update = kP * diff;
+    if (kI != 0)
+        update += sum * kI ;
+    if (kD != 0)
     {
-        update += (diff - data->last_diff) * data->kD;
+        update += (diff - last_diff) * kD;
         //Letzte differenz für D Anteil sichern
-        data->last_diff = diff;
+        last_diff = diff;
     }
 
     bool reached = false;
     update /= 16;
 
     //Auf maximum begrenzen
-    update = ensure_max(update, &reached, data);
+    if (update > maximum) {
+        update = maximum;
+        reached = true;
+    } else if (update < -maximum) {
+        update = -maximum;
+        reached = true;
+    }
 
     //Nur wenn wir nicht in die Begrenzung reinlaufen dann I Anteil dazu zählen
     if (!reached)
-        data->sum += diff;
+        sum += diff;
 
     //Integral summe begrenzen
-    if (data->kI > 0) {
-        if (data->sum > data->sum_max)
-            data->sum = data->sum_max;
-        else if (data->sum < -data->sum_max)
-            data->sum = -data->sum_max;
-    }
-
-    return update;
-}
-
-int16_t ensure_max(int32_t update, bool *reached, pid_data *data)
-{
-    *reached = false;
-    if (update > data->maximum) {
-        update = data->maximum;
-        *reached = true;
-    } else if (update < -data->maximum) {
-        update = -data->maximum;
-        *reached = true;
+    if (kI != 0) {
+        if (sum > sum_max)
+            sum = sum_max;
+        else if (sum < -sum_max)
+            sum = -sum_max;
     }
     return update;
-}
 }
