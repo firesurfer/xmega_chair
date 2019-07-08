@@ -1,6 +1,6 @@
-#include "powercontroller.h"
+#include "powermanager.h"
 
-PowerController::PowerController()
+PowerManager::PowerManager()
 {
     PORTC.DIRSET = (1<<m_power_left) | ( 1<< m_power_right);
     PORTC.OUTCLR = (1<<m_power_left) | ( 1<< m_power_right);
@@ -8,7 +8,7 @@ PowerController::PowerController()
     m_power_on = false;
 }
 
-void PowerController::task_switches()
+void PowerManager::task_switches()
 {
     if(m_switch_port.IN & (1<<m_switch_left))
     {
@@ -30,13 +30,13 @@ void PowerController::task_switches()
     }
 }
 
-void PowerController::off()
+void PowerManager::off()
 {
     m_power_port.OUTCLR = (1<<m_power_right);
     m_power_port.OUTCLR = (1<<m_power_left);
 }
 
-void PowerController::on()
+void PowerManager::on()
 {
     if(m_power_on)
     {
@@ -45,13 +45,13 @@ void PowerController::on()
     }
 }
 
-void PowerController::lock()
+void PowerManager::lock()
 {
     m_power_on = false;
     off();
 }
 
-void PowerController::unlock()
+void PowerManager::unlock()
 {
     m_power_on = true;
 }

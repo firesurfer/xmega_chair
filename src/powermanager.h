@@ -1,10 +1,10 @@
 #pragma once
 #include <avr/io.h>
 
-class PowerController
+class PowerManager
 {
 public:
-    PowerController();
+    PowerManager();
     void task_switches();
     void off();
     void on();

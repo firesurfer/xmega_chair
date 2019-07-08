@@ -3,7 +3,6 @@
 
 #include "pid_controller.h"
 #include "uart.h"
-#include "powercontroller.h"
 #include "adc.h"
 
 class SpeedController
