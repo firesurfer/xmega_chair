@@ -19,7 +19,6 @@ void PowerManager::task_switches()
         m_power_port.OUTCLR = (1<<m_power_left);
     }
 
-
     if(m_switch_port.IN & (1<<m_switch_right))
     {
         if(m_power_on)

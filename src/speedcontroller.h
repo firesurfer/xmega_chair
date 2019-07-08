@@ -27,7 +27,6 @@ private:
     int16_t speed_right_front;
     int16_t speed_right_rear;
     int16_t speed_base;
-
 };
 
 #endif // SPEEDCONTROLLER_H

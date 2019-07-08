@@ -15,11 +15,7 @@
  *
  */
 
-
 #include "uart_parser.h"
-
-
-
 
 UartParser::UartParser(Uart &uart):
     m_uart(uart)

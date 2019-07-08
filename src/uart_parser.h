@@ -34,17 +34,4 @@ public:
 private:
     Uart& m_uart;
     CommandHandler m_command_handler;
-
-
 };
-
-namespace uart_parser {
-
-
-
-
-
-
-
-
-}

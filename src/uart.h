@@ -34,7 +34,7 @@
 class Uart
 {
 public:
-    typedef void (*rx_handler_t)(uint8_t);
+    typedef void (*rx_handler_t)(void*,uint8_t);
     Uart(USART_t& usart, PORT_t &port, uint8_t pin, int baudrate);
     void transmit_it(char c);
     void transmit_it(const char *s);
@@ -44,6 +44,7 @@ public:
     void transmit(uint8_t* buffer, uint8_t length);
 
     uint8_t read();
+
     void dre_interrupt(){
         register uint8_t data;
         if(tx_buf.pop_front(data)){
@@ -52,16 +53,19 @@ public:
             m_usart.CTRLA &= ~USART_DREINTLVL_gm;
         }
     }
-
-    void rx_complete_interrupt()
-    {
+    void rx_complete_interrupt(){
         if(rx_handler)
-            rx_handler(m_usart.DATA);
+            rx_handler(rx_handler_obj, m_usart.DATA);
     }
-    void set_rx_handler(rx_handler_t handler);
+    void set_rx_handler(rx_handler_t handler, void *handler_obj){
+        rx_handler = handler;
+        rx_handler_obj = handler_obj;
+    }
+
 private:
     USART_t& m_usart;
     rx_handler_t rx_handler;
+    void *rx_handler_obj;
 
     ringbuf_t<10> tx_buf;
     //ringbuf_t<transmit_buffer_size> rx_buf;

@@ -55,5 +55,4 @@ int main(void)
         led1.toggle();
         _delay_ms(500);
     }
-
 }

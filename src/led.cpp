@@ -11,7 +11,6 @@ Led::Led(PORT_t &port, uint8_t pin):
 void Led::set()
 {
     m_port.OUTSET = (1<<m_pin);
-
 }
 
 void Led::clear()

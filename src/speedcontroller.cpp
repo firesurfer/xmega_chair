@@ -24,8 +24,6 @@ void SpeedController::update()
 void SpeedController::set_speed(int16_t speed)
 {
     speed_base = speed;
-
-
 }
 
 void SpeedController::set_angle(int16_t angle)
@@ -35,7 +33,6 @@ void SpeedController::set_angle(int16_t angle)
 
 void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
 {
-
     uint8_t buffer[5];
     buffer[0] = '#';
     buffer[1] = command;
@@ -48,8 +45,6 @@ void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
         checksum ^= buffer[i];
     }
     buffer[4] = checksum;
-
-
 }
 
 int16_t SpeedController::adc_to_angle(int16_t adc)

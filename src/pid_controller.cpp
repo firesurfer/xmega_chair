@@ -3,8 +3,6 @@
 namespace pid_controller {
 
 
-
-
 int16_t update(int32_t value, pid_data *data)
 {
     //Regelabweichung
