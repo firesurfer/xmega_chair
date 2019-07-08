@@ -5,12 +5,24 @@
 #include "uart.h"
 #include "adc.h"
 #include "powercontroller.h"
+#include "uart_parser.h"
 
 PowerController pcontroller;
 Uart uartc0(USARTC0, PORTC,PIN3,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartc1(USARTC1, PORTC,PIN7,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartd0(USARTD0, PORTD,PIN2,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 ADC steeringAdc(ADCA);
+Led led1(PORTE,0);
+Led led2(PORTE,1);
+Led led3(PORTE,2);
+Led led4(PORTE,3);
+UartParser cmdparser(uartc0);
+
+void handle_command(uint8_t cmd, uint16_t& data)
+{
+    //TODO
+}
+
 void setup_clock()
 {
     CCP = CCP_IOREG_gc;
@@ -29,10 +41,7 @@ void setup_clock()
 int main(void)
 {
     setup_clock();
-    Led led1(PORTE,0);
-    Led led2(PORTE,1);
-    Led led3(PORTE,2);
-    Led led4(PORTE,3);
+
     led1.set();
     led2.set();
     led3.set();
