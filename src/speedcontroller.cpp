@@ -17,7 +17,11 @@ void SpeedController::update()
 {
     if(!m_locked)
     {
-        int16_t diff_speed =  pid_controller.update(adc_to_angle(adc_poti.lastResult(2)));
+        int16_t angle = adc_to_angle(adc_poti.lastResult(2));
+        last_angle += angle;
+        last_angle /= 2;
+
+        int16_t diff_speed =  pid_controller.update(last_angle);
         speed_left_rear = speed_base;
         speed_right_rear = speed_base;
         speed_left_front = speed_base -diff_speed;
@@ -55,6 +59,14 @@ void SpeedController::set_speed(int16_t speed)
 
 void SpeedController::set_angle(int16_t angle)
 {
+    if(angle > 4500)
+    {
+        angle = 4500;
+    }
+    else if(angle < -4500)
+    {
+        angle = -4500;
+    }
     pid_controller.target = angle;
 }
 

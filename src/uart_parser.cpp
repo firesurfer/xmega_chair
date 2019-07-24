@@ -20,7 +20,8 @@
 UartParser::UartParser(Uart &uart):
     m_uart(uart)
 {
-
+    Uart::rx_handler_t rx= reinterpret_cast<Uart::rx_handler_t>(&UartParser::rx_handler);
+    m_uart.set_rx_handler(rx,this);
 }
 
 void UartParser::rx_handler(char c)
@@ -44,7 +45,7 @@ void UartParser::rx_handler(char c)
             {
                 checksum ^= buf[i];
             }
-            if(checksum == buf[4])
+            //if(checksum == buf[4])
             {
                 uint16_t data = buf[3] | (uint16_t)buf[2] << 8;
                 m_command_handler(buf[1],data);

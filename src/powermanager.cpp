@@ -65,6 +65,8 @@ void PowerManager::off()
 {
     m_power_port.OUTCLR = (1<<m_power_right);
     m_power_port.OUTCLR = (1<<m_power_left);
+    led3.clear();
+    led4.clear();
 }
 
 void PowerManager::on()

@@ -52,7 +52,9 @@ void handle_command(uint8_t cmd, uint16_t& data)
         scontroller.set_angle((int16_t)data);
         break;
 
-
+    case 6:
+        led1.toggle();
+        break;
 
     }
 }
@@ -85,18 +87,17 @@ void setup_counter()
 int main(void)
 {
     setup_clock();
-
+    cmdparser.set_command_handler(handle_command);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
     setup_counter();
     pcontroller.unlock();
     pcontroller.off();
 
     scontroller.unlock();
-    scontroller.set_speed(100);
+
     sei();
 
-    uartc0.transmit_it("Hello world\n");
-
+    uartc0.transmit_it("Hello world");
     while(1)
     {
         led1.toggle();
