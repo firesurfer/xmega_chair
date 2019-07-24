@@ -55,7 +55,7 @@ public:
         }
     }
     void rx_complete_interrupt(){
-        if(rx_handler)
+        if(rx_handler  && rx_handler_obj)
             rx_handler(rx_handler_obj, m_usart.DATA);
     }
     void set_rx_handler(rx_handler_t handler, void *handler_obj){
@@ -65,11 +65,11 @@ public:
 
 private:
     USART_t& m_usart;
-    rx_handler_t rx_handler;
-    void *rx_handler_obj;
+    rx_handler_t rx_handler = nullptr;
+    void *rx_handler_obj = nullptr;
 
     ringbuf_t<10> tx_buf;
-    //ringbuf_t<transmit_buffer_size> rx_buf;
+
 };
 
 

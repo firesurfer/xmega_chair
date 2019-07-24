@@ -5,16 +5,19 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_right(uright),
     adc_poti(apoti)
 {
-    pid_controller.kP = 10;
-    pid_controller.kI = 0;
+    pid_controller.kP = 20;
+    pid_controller.kI = 10;
     pid_controller.kD = 0;
+    pid_controller.sum = 0;
+    pid_controller.maximum = 1000;
+    pid_controller.target = 0;
 }
 
 void SpeedController::update()
 {
     if(!m_locked)
     {
-        int16_t diff_speed =  pid_controller.update(adc_to_angle(adc_poti.lastResult(0)));
+        int16_t diff_speed =  pid_controller.update(adc_to_angle(adc_poti.lastResult(2)));
         speed_left_rear = speed_base;
         speed_right_rear = speed_base;
         speed_left_front = speed_base + diff_speed;
@@ -22,9 +25,9 @@ void SpeedController::update()
 
         //1 - rear, 2 - front
         send_packet(1,speed_left_rear, uart_left);
-        send_packet(2, speed_left_front, uart_left);
+        send_packet(2, -speed_left_front, uart_left);
 
-        send_packet(1, speed_right_rear, uart_right);
+        send_packet(1, -speed_right_rear, uart_right);
         send_packet(2, speed_right_front, uart_right);
     }
 }
@@ -70,10 +73,14 @@ void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
     }
     buffer[4] = checksum;
 
-    uart.transmit(buffer,5);
+    uart.transmit_it(buffer,5);
 }
 
 int16_t SpeedController::adc_to_angle(int16_t adc)
-{
-    return adc; //TODO
+{   //m = 0,03916449086161879896
+    //c = -0,90078328981723237598
+
+    int32_t val = (int32_t)adc * 391 - 9007;
+    val /= 100;
+    return (int16_t)val;
 }

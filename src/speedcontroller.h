@@ -15,6 +15,7 @@ public:
     void set_speed(int16_t speed);
     void set_angle(int16_t angle);
     void send_packet(uint8_t command, uint16_t data, Uart &uart);
+    static int16_t adc_to_angle(int16_t adc);
 private:
     Uart& uart_left;
     Uart& uart_right;
@@ -22,7 +23,7 @@ private:
 
 
 
-    int16_t adc_to_angle(int16_t adc);
+
     PidController pid_controller;
 
     int16_t speed_left_front;

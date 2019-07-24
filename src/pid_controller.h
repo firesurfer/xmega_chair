@@ -15,6 +15,6 @@ public:
     int32_t kP;
     int32_t kD;
     int32_t kI;
-    int16_t maximum;
+    int16_t maximum = 1000;
     int32_t sum_max;
 };

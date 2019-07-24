@@ -28,6 +28,7 @@ UartParser cmdparser(uartc0);
 
 
 
+
 void handle_command(uint8_t cmd, uint16_t& data)
 {
     switch (cmd) {
@@ -76,31 +77,36 @@ void setup_clock()
 void setup_counter()
 {
     TCC0.CTRLA = TC_CLKSEL_DIV64_gc;
-    TCC0.PER = 0xFFFF;
-    TCC0.INTCTRLA = TC_OVFINTLVL_HI_gc;
+    TCC0.PER = 10000;
+    TCC0.INTCTRLA = TC_OVFINTLVL_LO_gc;
 
 }
 
 int main(void)
 {
     setup_clock();
-    PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
-    //setup_counter();
-    pcontroller.unlock();
 
-    steeringAdc.start_it();
+    PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
+    setup_counter();
+    pcontroller.unlock();
+    pcontroller.off();
+
+    scontroller.unlock();
+    scontroller.set_speed(100);
     sei();
 
+    uartc0.transmit_it("Hello world\n");
 
     while(1)
     {
         led1.toggle();
-        _delay_ms(100);
+        _delay_ms(500);
         pcontroller.task_switches();
-        char buffer[10];
-        itoa(steeringAdc.lastResult(0), buffer,10);
-        uartc0.transmit(buffer);
-        uartc0.transmit('\n');
+
+        /*char buffer[10];
+        itoa(SpeedController::adc_to_angle(steeringAdc.lastResult(2)), buffer,10);
+        uartc0.transmit_it(buffer);
+        uartc0.transmit_it('\n');*/
         /*scontroller.send_packet(1,200,uartc1);
         scontroller.send_packet(2,-200,uartc1);
         scontroller.send_packet(1,200,uartd0);

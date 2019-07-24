@@ -22,8 +22,8 @@ ADC::ADC(ADC_t &adc):
     m_adc.CTRLB = ADC_RESOLUTION_12BIT_gc  | ADC_CONMODE_bm;
 
 
-    m_adc.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
-    m_adc.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc | ADC_CH_MUXNEG_PIN5_gc;
+    m_adc.CH0.CTRL = ADC_CH_GAIN_DIV2_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    m_adc.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc | ADC_CH_MUXNEG_GND_MODE4_gc;
     m_adc.CH1.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
     m_adc.CH1.MUXCTRL = ADC_CH_MUXPOS_PIN6_gc | ADC_CH_MUXNEG_GND_MODE4_gc;
     m_adc.CH2.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
@@ -50,11 +50,12 @@ void ADC::ch3_interrupt()
 {
     last_results[0] = m_adc.CH0.RES;
     last_results[1] = m_adc.CH1.RES;
-    last_results[2] = m_adc.CH2.RES;
-    last_results[3]= m_adc.CH3.RES;
+    last_results[2] += m_adc.CH2.RES;
+    last_results[2] /= 2;
+    last_results[3] = m_adc.CH3.RES;
     led2.toggle();
 
-    m_adc.CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm;
+  //  m_adc.CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm;
 
 
 
