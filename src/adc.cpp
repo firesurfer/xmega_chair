@@ -50,8 +50,7 @@ void ADC::ch3_interrupt()
 {
     last_results[0] = m_adc.CH0.RES;
     last_results[1] = m_adc.CH1.RES;
-    last_results[2] += m_adc.CH2.RES;
-    last_results[2] /= 2;
+    last_results[2] = m_adc.CH2.RES;
     last_results[3] = m_adc.CH3.RES;
     led2.toggle();
 
