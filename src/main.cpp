@@ -77,7 +77,7 @@ void setup_clock()
 void setup_counter()
 {
     TCC0.CTRLA = TC_CLKSEL_DIV64_gc;
-    TCC0.PER = 20000;
+    TCC0.PER = 5000;
     TCC0.INTCTRLA = TC_OVFINTLVL_LO_gc;
 
 }
@@ -100,19 +100,7 @@ int main(void)
     while(1)
     {
         led1.toggle();
-        _delay_ms(500);
+        _delay_ms(200);
         pcontroller.task_switches();
-
-        char buffer[10];
-        itoa(SpeedController::adc_to_angle(steeringAdc.lastResult(2)), buffer,10);
-        uartc0.transmit_it(buffer);
-        uartc0.transmit_it('\n');
-        /*scontroller.send_packet(1,200,uartc1);
-        scontroller.send_packet(2,-200,uartc1);
-        scontroller.send_packet(1,200,uartd0);
-        scontroller.send_packet(2,-200,uartd0);*/
-
-
-
     }
 }

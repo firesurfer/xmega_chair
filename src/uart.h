@@ -55,8 +55,9 @@ public:
         }
     }
     void rx_complete_interrupt(){
+        uint8_t data = m_usart.DATA;
         if(rx_handler  && rx_handler_obj)
-            rx_handler(rx_handler_obj, m_usart.DATA);
+            rx_handler(rx_handler_obj, data);
     }
     void set_rx_handler(rx_handler_t handler, void *handler_obj){
         rx_handler = handler;
