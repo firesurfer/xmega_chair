@@ -13,7 +13,7 @@ ADC::ADC(ADC_t &adc):
     ADCA.CALL = CalibrationByteL;
     ADCA.CALH = CalibrationByteH;
 
-    PORTA.DIRCLR = (1<<PIN1);
+    PORTA.DIRCLR = (1<<PIN1) | (1<<PIN5);
 
     adc.REFCTRL = ADC_REFSEL_INTVCC2_gc; //VCC/2
     adc.PRESCALER = ADC_PRESCALER_DIV16_gc; //Prescaler 16

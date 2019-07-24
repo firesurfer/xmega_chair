@@ -19,8 +19,11 @@ add_definitions(-DF_CPU=32000000UL -D__AVR_ATxmega32A4U__ -Wa,-adhlns=$@.lst)
 # Allow assembly files to be built
 ENABLE_LANGUAGE(ASM)
 
-file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*)
-file(GLOB HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h*)
+file(GLOB SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*
+
+    )
+file(GLOB HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h*
+)
 # Make the executable
 add_executable(chair_mega.elf ${SRC_FILES} ${HEADER_FILES})
 

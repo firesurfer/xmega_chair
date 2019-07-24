@@ -28,4 +28,7 @@ private:
     uint8_t m_switch_left = PIN0;
     uint8_t m_switch_right = PIN1;
 
+    bool left_on = false;
+    bool right_on = false;
+
 };

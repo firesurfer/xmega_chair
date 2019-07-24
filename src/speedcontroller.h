@@ -10,14 +10,17 @@ class SpeedController
 public:
     SpeedController(Uart& uleft, Uart& uright, ADC& apoti);
     void update();
+    void lock();
+    void unlock();
     void set_speed(int16_t speed);
     void set_angle(int16_t angle);
+    void send_packet(uint8_t command, uint16_t data, Uart &uart);
 private:
     Uart& uart_left;
     Uart& uart_right;
     ADC& adc_poti;
 
-    void send_packet(uint8_t command, uint16_t data, Uart &uart);
+
 
     int16_t adc_to_angle(int16_t adc);
     PidController pid_controller;
@@ -27,6 +30,8 @@ private:
     int16_t speed_right_front;
     int16_t speed_right_rear;
     int16_t speed_base;
+
+    bool m_locked = true;
 };
 
 #endif // SPEEDCONTROLLER_H
