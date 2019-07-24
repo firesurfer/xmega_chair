@@ -79,7 +79,7 @@ void setup_counter()
 int main(void)
 {
     setup_clock();
-
+    PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
 
     pcontroller.unlock();
 
@@ -87,7 +87,7 @@ int main(void)
     sei();
 
 
-    //sei();
+
     while(1)
     {
         led1.toggle();
@@ -95,8 +95,8 @@ int main(void)
         pcontroller.task_switches();
         char buffer[10];
         itoa(steeringAdc.lastResult(0), buffer,10);
-        uartc0.transmit(buffer);
-        uartc0.transmit('\n');
+        uartc0.transmit_it(buffer);
+        uartc0.transmit_it('\n');
         /*scontroller.send_packet(1,200,uartc1);
         scontroller.send_packet(2,-200,uartc1);
         scontroller.send_packet(1,200,uartd0);
