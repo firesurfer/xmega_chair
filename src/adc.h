@@ -19,6 +19,6 @@ public:
     uint16_t lastResult(uint8_t index) const;
 
 private:
-    ADC_t m_adc;
+    ADC_t& m_adc;
     uint16_t last_results[4];
 };

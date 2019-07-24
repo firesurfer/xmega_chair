@@ -17,37 +17,45 @@ ADC::ADC(ADC_t &adc):
 
     PORTA.DIRCLR = (1<<PIN1) | (1<<PIN5);
 
-    adc.REFCTRL = ADC_REFSEL_INT1V_gc; //1V Ref
-    adc.PRESCALER = ADC_PRESCALER_DIV16_gc; //Prescaler 16
-    adc.CTRLB = ADC_RESOLUTION_12BIT_gc  | ADC_CONMODE_bm;
+    m_adc.REFCTRL = m_adc.REFCTRL = ADC_REFSEL_INT1V_gc | ADC_BANDGAP_bm;//1V Ref
+    m_adc.PRESCALER = ADC_PRESCALER_DIV16_gc; //Prescaler 16
+    m_adc.CTRLB = ADC_RESOLUTION_12BIT_gc  | ADC_CONMODE_bm;
 
 
-    adc.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
-    adc.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc | ADC_CH_MUXNEG_PIN5_gc;
-    adc.CH1.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
-    adc.CH1.MUXCTRL = ADC_CH_MUXPOS_PIN6_gc | ADC_CH_MUXNEG_GND_MODE4_gc;
-    adc.CH2.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
-    adc.CH2.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc | ADC_CH_MUXNEG_PIN4_gc;
-    adc.CH3.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
-    adc.CH3.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc | ADC_CH_MUXNEG_PIN5_gc;
+    m_adc.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    m_adc.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc | ADC_CH_MUXNEG_PIN5_gc;
+    m_adc.CH1.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    m_adc.CH1.MUXCTRL = ADC_CH_MUXPOS_PIN6_gc | ADC_CH_MUXNEG_GND_MODE4_gc;
+    m_adc.CH2.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    m_adc.CH2.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc | ADC_CH_MUXNEG_PIN4_gc;
+    m_adc.CH3.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    m_adc.CH3.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc | ADC_CH_MUXNEG_PIN5_gc;
 
-    adc.CTRLA = ADC_ENABLE_bm;
+    m_adc.CTRLA = ADC_ENABLE_bm;
 }
+
 
 
 
 void ADC::start_it()
 {
-    m_adc.CH1.INTCTRL = ADC_CH_INTMODE_COMPLETE_gc | ADC_CH_INTLVL_LO_gc;
+
+    m_adc.CH3.INTCTRL = ADC_CH_INTMODE_COMPLETE_gc | ADC_CH_INTLVL_LO_gc;
+
+    m_adc.CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm;
+
 }
 
 void ADC::ch3_interrupt()
 {
     last_results[0] = m_adc.CH0.RES;
-    last_results[0] = m_adc.CH1.RES;
-    last_results[0] = m_adc.CH2.RES;
-    last_results[0]= m_adc.CH3.RES;
+    last_results[1] = m_adc.CH1.RES;
+    last_results[2] = m_adc.CH2.RES;
+    last_results[3]= m_adc.CH3.RES;
     led2.toggle();
+
+    m_adc.CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm;
+
 
 
 }
