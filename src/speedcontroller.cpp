@@ -54,6 +54,10 @@ void SpeedController::unlock()
 
 void SpeedController::set_speed(int16_t speed)
 {
+    if(speed > limit)
+        speed = limit;
+    if(speed < -limit)
+        speed = -limit;
     speed_base = speed;
 }
 

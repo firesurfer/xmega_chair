@@ -33,6 +33,8 @@ private:
     int16_t speed_base;
     int16_t last_angle = 0;
 
+    const int16_t limit = 1000;
+
     bool m_locked = true;
 };
 
