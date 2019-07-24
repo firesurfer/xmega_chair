@@ -12,12 +12,13 @@ class ADC
 {
 public:
     ADC(ADC_t & adc);
-    uint16_t read();
+
     void start_it();
-    void ch1_interrupt();
-    uint16_t lastResult() const;
+
+    void ch3_interrupt();
+    uint16_t lastResult(uint8_t index) const;
 
 private:
     ADC_t m_adc;
-    uint16_t last_result;
+    uint16_t last_results[4];
 };

@@ -83,7 +83,8 @@ int main(void)
 
     pcontroller.unlock();
 
-
+    steeringAdc.start_it();
+    sei();
 
 
     //sei();
@@ -92,14 +93,14 @@ int main(void)
         led1.toggle();
         _delay_ms(100);
         pcontroller.task_switches();
-        /*  char buffer[10];
-        itoa(steeringAdc.read(), buffer,10);
-        uartc0.transmit_it(buffer);
-        uartc0.transmit_it('\n');*/
-        scontroller.send_packet(1,200,uartc1);
+        char buffer[10];
+        itoa(steeringAdc.lastResult(0), buffer,10);
+        uartc0.transmit(buffer);
+        uartc0.transmit('\n');
+        /*scontroller.send_packet(1,200,uartc1);
         scontroller.send_packet(2,-200,uartc1);
         scontroller.send_packet(1,200,uartd0);
-        scontroller.send_packet(2,-200,uartd0);
+        scontroller.send_packet(2,-200,uartd0);*/
 
 
 

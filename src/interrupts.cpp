@@ -34,8 +34,8 @@ ISR(USARTD0_DRE_vect)
     uartd0.dre_interrupt();
 }
 
-ISR(ADCA_CH1_vect)
+ISR(ADCA_CH3_vect)
 {
 
-    steeringAdc.ch1_interrupt();
+    steeringAdc.ch3_interrupt();
 }

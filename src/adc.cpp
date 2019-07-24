@@ -1,5 +1,7 @@
 #include "adc.h"
 
+#include "led.h"
+extern Led led2;
 
 ADC::ADC(ADC_t &adc):
     m_adc(adc)
@@ -15,47 +17,42 @@ ADC::ADC(ADC_t &adc):
 
     PORTA.DIRCLR = (1<<PIN1) | (1<<PIN5);
 
-    adc.REFCTRL = ADC_REFSEL_INTVCC2_gc; //VCC/2
+    adc.REFCTRL = ADC_REFSEL_INT1V_gc; //1V Ref
     adc.PRESCALER = ADC_PRESCALER_DIV16_gc; //Prescaler 16
-    adc.CTRLB = ADC_RESOLUTION_12BIT_gc | ADC_CURRLIMIT_LOW_gc | ADC_CONMODE_bm;
+    adc.CTRLB = ADC_RESOLUTION_12BIT_gc  | ADC_CONMODE_bm;
 
-    adc.CH0.CTRL = ADC_CH_GAIN_DIV2_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
-    adc.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc | ADC_CH_MUXNEG_GND_MODE4_gc;
-    adc.CH1.CTRL = ADC_CH_GAIN_DIV2_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+
+    adc.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    adc.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc | ADC_CH_MUXNEG_PIN5_gc;
+    adc.CH1.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
     adc.CH1.MUXCTRL = ADC_CH_MUXPOS_PIN6_gc | ADC_CH_MUXNEG_GND_MODE4_gc;
-    adc.CH2.CTRL = ADC_CH_GAIN_DIV2_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    adc.CH2.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
     adc.CH2.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc | ADC_CH_MUXNEG_PIN4_gc;
-    adc.CH3.CTRL = ADC_CH_GAIN_DIV2_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
+    adc.CH3.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;
     adc.CH3.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc | ADC_CH_MUXNEG_PIN5_gc;
 
     adc.CTRLA = ADC_ENABLE_bm;
 }
 
-uint16_t ADC::read()
-{
-    m_adc.CH1.CTRL |= ADC_CH_START_bm;
-    while(!(m_adc.CH1.INTFLAGS & ADC_CH_CHIF_bm));
 
-    m_adc.CH1.INTFLAGS = ADC_CH_CHIF_bm;
-    uint16_t result = ADCA.CH1.RES;
-    last_result = result;
-    return result;
-
-}
 
 void ADC::start_it()
 {
     m_adc.CH1.INTCTRL = ADC_CH_INTMODE_COMPLETE_gc | ADC_CH_INTLVL_LO_gc;
 }
 
-void ADC::ch1_interrupt()
+void ADC::ch3_interrupt()
 {
-    uint16_t result = m_adc.CH1.RES;
+    last_results[0] = m_adc.CH0.RES;
+    last_results[0] = m_adc.CH1.RES;
+    last_results[0] = m_adc.CH2.RES;
+    last_results[0]= m_adc.CH3.RES;
+    led2.toggle();
 
-    last_result = result;
+
 }
 
-uint16_t ADC::lastResult() const
+uint16_t ADC::lastResult(uint8_t index) const
 {
-    return last_result;
+    return last_results[index];
 }

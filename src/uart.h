@@ -40,6 +40,7 @@ public:
     void transmit_it(const char *s);
     void transmit_it(const uint8_t *buf, uint8_t len);
 
+    void transmit(char s);
     void transmit(char* str);
     void transmit(uint8_t* buffer, uint8_t length);
 

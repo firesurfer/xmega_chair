@@ -36,6 +36,13 @@ void Uart::transmit_it(const uint8_t *buf, uint8_t len)
         transmit_it(buf[i]);
 }
 
+void Uart::transmit(char s)
+{
+    while(!(m_usart.STATUS & USART_DREIF_bm));
+    m_usart.DATA = s;
+
+}
+
 void Uart::transmit(char *str)
 {
     while(*str)
