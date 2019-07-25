@@ -110,8 +110,7 @@ int main(void)
     while(1)
     {
         led1.toggle();
-        _delay_ms(50);
+        _delay_ms(100);
         pmanager.task_switches();
-      //  wdt_reset();
     }
 }

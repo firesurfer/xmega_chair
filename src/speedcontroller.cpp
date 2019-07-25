@@ -11,6 +11,7 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     pid_controller.sum = 0;
     pid_controller.maximum = 1000;
     pid_controller.target = 0;
+    pid_controller.sum_max = (pid_controller.maximum*64) / pid_controller.kI;
 }
 
 void SpeedController::update()

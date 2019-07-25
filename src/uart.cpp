@@ -11,7 +11,7 @@ Uart::Uart(USART_t &usart, PORT_t & port, uint8_t pin, int baudrate):
 
     m_usart.CTRLB =  USART_RXEN_bm | USART_TXEN_bm;
     m_usart.CTRLC = USART_CMODE_ASYNCHRONOUS_gc | USART_CHSIZE_8BIT_gc;
-    m_usart.CTRLA = USART_DREINTLVL_MED_gc ;
+    m_usart.CTRLA = USART_DREINTLVL_HI_gc | USART_RXCINTLVL_MED_gc ;
 }
 
 void Uart::transmit_it(char c)
