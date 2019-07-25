@@ -13,7 +13,7 @@ PowerManager::PowerManager()
     m_switch_port.PIN1CTRL = PORT_OPC_PULLUP_gc;
     m_power_on = false;
 }
-
+//TODO better debouncing of switches
 void PowerManager::task_switches()
 {
     if(m_power_on)
@@ -58,6 +58,9 @@ void PowerManager::task_switches()
             m_power_port.OUTSET = (1<<m_power_right);
             led4.set();
         }
+    }
+    else {
+        off();
     }
 }
 

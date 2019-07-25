@@ -8,6 +8,7 @@
 #include "uart_parser.h"
 #include "speedcontroller.h"
 #include "interrupts.h"
+#include <avr/wdt.h>
 
 
 
@@ -51,11 +52,9 @@ void handle_command(uint8_t cmd, uint16_t& data)
     case 5:
         scontroller.set_angle((int16_t)data);
         break;
-
     case 6:
         led1.toggle();
         break;
-
     }
 }
 
@@ -83,17 +82,21 @@ void setup_counter()
     TCC0.INTCTRLA = TC_OVFINTLVL_LO_gc;
 
 }
+void setup_watchdog()
+{
 
+    wdt_enable(WDTO_120MS);
+}
 int main(void)
 {
     setup_clock();
     cmdparser.set_command_handler(handle_command);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
+    setup_watchdog();
+    wdt_reset();
     setup_counter();
-    pcontroller.unlock();
-    pcontroller.off();
-
-    scontroller.unlock();
+    pcontroller.lock();
+    scontroller.lock();
 
     sei();
 
@@ -101,7 +104,8 @@ int main(void)
     while(1)
     {
         led1.toggle();
-        _delay_ms(200);
+        _delay_ms(50);
         pcontroller.task_switches();
+        wdt_reset();
     }
 }

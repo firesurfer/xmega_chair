@@ -48,16 +48,12 @@ void ADC::start_it()
 
 void ADC::ch3_interrupt()
 {
+    //In case ch3 is finished CH0 - CH2 are also finished
     last_results[0] = m_adc.CH0.RES;
     last_results[1] = m_adc.CH1.RES;
     last_results[2] = m_adc.CH2.RES;
     last_results[3] = m_adc.CH3.RES;
     led2.toggle();
-
-  //  m_adc.CTRLA |= ADC_CH0START_bm | ADC_CH1START_bm | ADC_CH2START_bm | ADC_CH3START_bm;
-
-
-
 }
 
 uint16_t ADC::lastResult(uint8_t index) const
