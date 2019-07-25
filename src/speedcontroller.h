@@ -66,6 +66,10 @@ private:
     bool m_locked = true;
     volatile bool send_mutex=false;
     int16_t limit(int16_t val, int16_t limit);
+
+    void uart_callback(uint8_t c);
+
+    uint16_t uart_counter = 0;
 };
 
 #endif // SPEEDCONTROLLER_H

@@ -8,7 +8,8 @@
 #include "uart_parser.h"
 #include "speedcontroller.h"
 #include "interrupts.h"
-#include <avr/wdt.h>
+
+#define WDT_Reset()	asm("wdr") //( watchdog_reset( ) )
 
 PowerManager pmanager;
 Uart uartc0(USARTC0, PORTC,PIN3,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
@@ -89,7 +90,12 @@ void setup_counter()
 
 void setup_watchdog()
 {
-    wdt_enable(WDTO_250MS);
+      CCP = CCP_IOREG_gc;
+      WDT.CTRL = WDT_PER_512CLK_gc | WDT_ENABLE_bm | WDT_CEN_bm ;
+      while(  WDT.STATUS & WDT_SYNCBUSY_bm )
+      {
+
+      }
 }
 
 int main(void)
@@ -98,7 +104,7 @@ int main(void)
     cmdparser.set_command_handler(handle_command);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
    // setup_watchdog();
-   // wdt_reset();
+    WDT_Reset();
     setup_counter();
     pmanager.lock();
     scontroller.lock();
@@ -111,5 +117,6 @@ int main(void)
         led1.toggle();
         _delay_ms(100);
         pmanager.task_switches();
+        WDT_Reset();
     }
 }

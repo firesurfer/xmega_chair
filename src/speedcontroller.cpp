@@ -1,5 +1,7 @@
 #include "speedcontroller.h"
+#include "powermanager.h"
 
+extern PowerManager pmanager;
 SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_left(uleft),
     uart_right(uright),
@@ -12,12 +14,22 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     pid_controller.maximum = 1000;
     pid_controller.target = 0;
     pid_controller.sum_max = (pid_controller.maximum*64) / pid_controller.kI;
+
+    Uart::rx_handler_t rx= reinterpret_cast<Uart::rx_handler_t>(&SpeedController::uart_callback);
+    uart_left.set_rx_handler(rx,this);
+    uart_right.set_rx_handler(rx,this);
 }
 
 void SpeedController::update()
 {
     if(!m_locked)
     {
+        uart_counter++;
+        if(uart_counter > 500)
+        {
+            //TODO disable power
+            pmanager.off();
+        }
         //First -> get angle in 1/100 degree
         int16_t angle = adc_to_angle(adc_poti.lastResult(2));
         //Low pass
@@ -51,13 +63,13 @@ void SpeedController::update()
             send_mutex=false;
         }
     }
+
 }
 
 void SpeedController::lock()
 {
     m_locked = true;
 
-    while(send_mutex);
     send_mutex=true;
     send_packet(1,0, uart_left);
     send_packet(2, 0, uart_left);
@@ -130,4 +142,9 @@ int16_t SpeedController::limit(int16_t val, int16_t limit)
     else if(val < -limit)
         val = -limit;
     return val;
+}
+
+void SpeedController::uart_callback(uint8_t c)
+{
+    uart_counter = 0;
 }
