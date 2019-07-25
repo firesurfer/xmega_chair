@@ -6,8 +6,8 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     adc_poti(apoti)
 {
     pid_controller.kP = 5;
-    pid_controller.kI = 0;
-    pid_controller.kD = 0;
+    pid_controller.kI = 5;
+    pid_controller.kD = 2;
     pid_controller.sum = 0;
     pid_controller.maximum = 1000;
     pid_controller.target = 0;
@@ -29,8 +29,8 @@ void SpeedController::update()
         speed_left_rear = speed_base;
         speed_right_rear = speed_base;
         //Front wheel -> controlled -> speed offset
-        speed_left_front = speed_base -diff_speed;
-        speed_right_front = speed_base +diff_speed;
+        speed_left_front = speed_base +diff_speed;
+        speed_right_front = speed_base -diff_speed;
 
         //Limit to a maximum value
         speed_left_rear = limit(speed_left_rear, limit_before_sending);

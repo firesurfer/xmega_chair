@@ -78,22 +78,22 @@ void setup_clock()
 void setup_counter()
 {
     TCC0.CTRLA = TC_CLKSEL_DIV64_gc;
-    TCC0.PER = 5000;
+    TCC0.PER = 500;
     TCC0.INTCTRLA = TC_OVFINTLVL_LO_gc;
 
 }
 void setup_watchdog()
 {
 
-    wdt_enable(WDTO_120MS);
+    wdt_enable(WDTO_250MS);
 }
 int main(void)
 {
     setup_clock();
     cmdparser.set_command_handler(handle_command);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
-    setup_watchdog();
-    wdt_reset();
+   // setup_watchdog();
+   // wdt_reset();
     setup_counter();
     pcontroller.lock();
     scontroller.lock();
@@ -106,6 +106,6 @@ int main(void)
         led1.toggle();
         _delay_ms(50);
         pcontroller.task_switches();
-        wdt_reset();
+      //  wdt_reset();
     }
 }
