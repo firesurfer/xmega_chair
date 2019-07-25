@@ -41,11 +41,15 @@ void SpeedController::update()
 
         //1 - rear, 2 - front
         //Send and adapt signs
-        send_packet(1,speed_left_rear, uart_left);
-        send_packet(2, -speed_left_front, uart_left);
+        if(!send_mutex){
+            send_mutex=true;
+            send_packet(1,speed_left_rear, uart_left);
+            send_packet(2, -speed_left_front, uart_left);
 
-        send_packet(1, -speed_right_rear, uart_right);
-        send_packet(2, speed_right_front, uart_right);
+            send_packet(1, -speed_right_rear, uart_right);
+            send_packet(2, speed_right_front, uart_right);
+            send_mutex=false;
+        }
     }
 }
 
@@ -53,11 +57,14 @@ void SpeedController::lock()
 {
     m_locked = true;
 
+    while(send_mutex);
+    send_mutex=true;
     send_packet(1,0, uart_left);
     send_packet(2, 0, uart_left);
 
     send_packet(1, 0, uart_right);
     send_packet(2, 0, uart_right);
+    send_mutex=false;
 }
 
 void SpeedController::unlock()

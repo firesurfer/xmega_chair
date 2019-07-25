@@ -85,7 +85,6 @@ void setup_counter()
     TCC0.CTRLA = TC_CLKSEL_DIV64_gc;
     TCC0.PER = 500;
     TCC0.INTCTRLA = TC_OVFINTLVL_LO_gc;
-
 }
 
 void setup_watchdog()
