@@ -21,7 +21,7 @@ int16_t PidController::update(int32_t value)
     }
 
     bool reached = false;
-    update /= 16;
+    update /= 64;
 
     //Auf maximum begrenzen
     if (update > maximum) {

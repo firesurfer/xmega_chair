@@ -53,12 +53,14 @@ void handle_command(uint8_t cmd, uint16_t& data)
         break;
     case 8:
         scontroller.pid_controller.kI = data;
+        scontroller.pid_controller.sum_max = (scontroller.pid_controller.maximum*64) / scontroller.pid_controller.kI;//uint32_t needed, if maximum*64 > 16bit
         break;
     case 9:
         scontroller.pid_controller.kD = data;
         break;
     case 10:
         scontroller.pid_controller.maximum = data;
+        scontroller.pid_controller.sum_max = (scontroller.pid_controller.maximum*64) / scontroller.pid_controller.kI;
         break;
     }
 }

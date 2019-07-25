@@ -5,9 +5,9 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_right(uright),
     adc_poti(apoti)
 {
-    pid_controller.kP = 5;
-    pid_controller.kI = 5;
-    pid_controller.kD = 2;
+    pid_controller.kP = 20;
+    pid_controller.kI = 20;
+    pid_controller.kD = 8;
     pid_controller.sum = 0;
     pid_controller.maximum = 1000;
     pid_controller.target = 0;
@@ -88,7 +88,6 @@ void SpeedController::set_angle(int16_t angle)
 
 void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
 {
-
     uint8_t buffer[5];
     buffer[0] = '#';
     buffer[1] = command;
@@ -111,7 +110,7 @@ int16_t SpeedController::adc_to_angle(int16_t adc)
 {   //m = 0,03916449086161879896
     //c = -0,90078328981723237598
 
-    int32_t val = (int32_t)adc * 391 - 9007;
+    int32_t val = (int32_t)adc * 391;
     val /= 100;
     return (int16_t)val;
 }
