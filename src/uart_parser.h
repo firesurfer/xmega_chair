@@ -15,13 +15,11 @@
  *
  */
 
-
 #pragma once
 
 #include "uart.h"
 #include <stdbool.h>
 #include "uart.h"
-
 
 class UartParser
 {

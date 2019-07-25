@@ -10,9 +10,7 @@
 #include "interrupts.h"
 #include <avr/wdt.h>
 
-
-
-PowerManager pcontroller;
+PowerManager pmanager;
 Uart uartc0(USARTC0, PORTC,PIN3,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartc1(USARTC1, PORTC,PIN7,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
 Uart uartd0(USARTD0, PORTD,PIN3,UART_BAUD_SELECT_XMEGA(115200, F_CPU));
@@ -25,23 +23,18 @@ Led led3(PORTE,2);
 Led led4(PORTE,3);
 UartParser cmdparser(uartc0);
 
-
-
-
-
-
 void handle_command(uint8_t cmd, uint16_t& data)
 {
     switch (cmd) {
     case 0:
         scontroller.lock();
-        pcontroller.lock();
+        pmanager.lock();
         break;
     case 1:
         scontroller.lock();
         break;
     case 2:
-        pcontroller.unlock();
+        pmanager.unlock();
         break;
     case 3:
         scontroller.unlock();
@@ -55,10 +48,20 @@ void handle_command(uint8_t cmd, uint16_t& data)
     case 6:
         led1.toggle();
         break;
+    case 7:
+        scontroller.pid_controller.kP = data;
+        break;
+    case 8:
+        scontroller.pid_controller.kI = data;
+        break;
+    case 9:
+        scontroller.pid_controller.kD = data;
+        break;
+    case 10:
+        scontroller.pid_controller.maximum = data;
+        break;
     }
 }
-
-
 
 void setup_clock()
 {
@@ -82,11 +85,12 @@ void setup_counter()
     TCC0.INTCTRLA = TC_OVFINTLVL_LO_gc;
 
 }
+
 void setup_watchdog()
 {
-
     wdt_enable(WDTO_250MS);
 }
+
 int main(void)
 {
     setup_clock();
@@ -95,7 +99,7 @@ int main(void)
    // setup_watchdog();
    // wdt_reset();
     setup_counter();
-    pcontroller.lock();
+    pmanager.lock();
     scontroller.lock();
 
     sei();
@@ -105,7 +109,7 @@ int main(void)
     {
         led1.toggle();
         _delay_ms(50);
-        pcontroller.task_switches();
+        pmanager.task_switches();
       //  wdt_reset();
     }
 }

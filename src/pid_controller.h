@@ -12,9 +12,9 @@ public:
     int32_t sum;
     int32_t last_diff;
     int32_t target;
-    int32_t kP;
-    int32_t kD;
-    int32_t kI;
+    uint32_t kP;
+    uint32_t kD;
+    uint32_t kI;
     int16_t maximum = 1000;
     int32_t sum_max;
 };
