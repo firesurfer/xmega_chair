@@ -2,16 +2,17 @@
 #include "powermanager.h"
 
 extern PowerManager pmanager;
+extern Uart uartc0;
 SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_left(uleft),
     uart_right(uright),
     adc_poti(apoti)
 {
     pid_controller.kP = 20;
-    pid_controller.kI = 20;
+    pid_controller.kI = 0;
     pid_controller.kD = 8;
     pid_controller.sum = 0;
-    pid_controller.maximum = 1000;
+    pid_controller.maximum = 400;
     pid_controller.target = 0;
     pid_controller.sum_max = (pid_controller.maximum*64) / pid_controller.kI;
 
@@ -27,14 +28,15 @@ void SpeedController::update()
         uart_counter++;
         if(uart_counter > 500)
         {
-            //TODO disable power
-            pmanager.off();
+            // pmanager.off();
         }
         //First -> get angle in 1/100 degree
         int16_t angle = adc_to_angle(adc_poti.lastResult(2));
         //Low pass
         last_angle += angle;
         last_angle /= 2;
+        if(abs(angle) > 4550)
+            pmanager.lock();
 
         //PID Controller
         int16_t diff_speed =  pid_controller.update(last_angle);
@@ -53,15 +55,34 @@ void SpeedController::update()
 
         //1 - rear, 2 - front
         //Send and adapt signs
+        send_counter++;
         if(!send_mutex){
-            send_mutex=true;
-            send_packet(1,speed_left_rear, uart_left);
-            send_packet(2, -speed_left_front, uart_left);
+            if(send_counter > 1)
+            {
+               /* char buffer[5];
+                itoa(speed_left_rear, buffer,10);
+                uartc0.transmit_it(buffer);
+                uartc0.transmit_it(":");
+                itoa(-speed_left_front, buffer,10);
+                uartc0.transmit_it(buffer);
+                uartc0.transmit_it(":");
+                itoa(-speed_right_rear, buffer,10);
+                uartc0.transmit_it(buffer);
+                uartc0.transmit_it(":");
+                itoa(speed_right_front, buffer,10);
+                uartc0.transmit_it(buffer);
+                uartc0.transmit_it("\n");*/
+                send_mutex=true;
+                send_packet(1,speed_left_rear, uart_left);
+                send_packet(2, -speed_left_front, uart_left);
 
-            send_packet(1, -speed_right_rear, uart_right);
-            send_packet(2, speed_right_front, uart_right);
-            send_mutex=false;
+                send_packet(1, -speed_right_rear, uart_right);
+                send_packet(2, speed_right_front, uart_right);
+                send_mutex=false;
+                send_counter = 0;
+            }
         }
+
     }
 
 }

@@ -5,6 +5,7 @@
 #include "uart.h"
 #include "adc.h"
 
+#include <math.h>
 class SpeedController
 {
 public:
@@ -70,6 +71,7 @@ private:
     void uart_callback(uint8_t c);
 
     uint16_t uart_counter = 0;
+    uint8_t send_counter = 0;
 };
 
 #endif // SPEEDCONTROLLER_H

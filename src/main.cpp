@@ -117,6 +117,11 @@ int main(void)
         led1.toggle();
         _delay_ms(100);
         pmanager.task_switches();
+        /*char buffer[5];
+        itoa(SpeedController::adc_to_angle(steeringAdc.lastResult(2)), buffer,10);
+        uartc0.transmit_it(buffer);
+        uartc0.transmit_it("\n");
+        */
         WDT_Reset();
     }
 }
