@@ -8,11 +8,11 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_right(uright),
     adc_poti(apoti)
 {
-    pid_controller.kP = 20;
+    pid_controller.kP = 12;
     pid_controller.kI = 0;
-    pid_controller.kD = 8;
+    pid_controller.kD = 25;
     pid_controller.sum = 0;
-    pid_controller.maximum = 400;
+    pid_controller.maximum = 350;
     pid_controller.target = 0;
     pid_controller.sum_max = (pid_controller.maximum*64) / pid_controller.kI;
 
@@ -28,15 +28,25 @@ void SpeedController::update()
         uart_counter++;
         if(uart_counter > 500)
         {
-            // pmanager.off();
+             pmanager.lock();
+             uart_counter = 0;
         }
         //First -> get angle in 1/100 degree
-        int16_t angle = adc_to_angle(adc_poti.lastResult(2));
+        int32_t angle = adc_to_angle(adc_poti.lastResult(2));
         //Low pass
-        last_angle += angle;
-        last_angle /= 2;
-        if(abs(angle) > 4550)
+        const int32_t filter = 30;
+        last_angle = last_angle * (100-filter) + angle * filter;
+        last_angle /= 100;
+        if(abs(last_angle) > 5000)
+        {
             pmanager.lock();
+            uartc0.transmit_it("Angle power off\n");
+            char buffer[5];
+            itoa(last_angle, buffer,10);
+            uartc0.transmit_it(buffer);
+            uartc0.transmit_it("\n");
+            
+        }
 
         //PID Controller
         int16_t diff_speed =  pid_controller.update(last_angle);
@@ -44,8 +54,8 @@ void SpeedController::update()
         speed_left_rear = speed_base;
         speed_right_rear = speed_base;
         //Front wheel -> controlled -> speed offset
-        speed_left_front = speed_base +diff_speed;
-        speed_right_front = speed_base -diff_speed;
+        speed_left_front = -speed_base +diff_speed;
+        speed_right_front = -speed_base -diff_speed;
 
         //Limit to a maximum value
         speed_left_rear = limit(speed_left_rear, limit_before_sending);
@@ -57,7 +67,7 @@ void SpeedController::update()
         //Send and adapt signs
         send_counter++;
         if(!send_mutex){
-            if(send_counter > 1)
+            if(send_counter >= 0)
             {
                /* char buffer[5];
                 itoa(speed_left_rear, buffer,10);
@@ -151,7 +161,7 @@ int16_t SpeedController::adc_to_angle(int16_t adc)
 {   //m = 0,03916449086161879896
     //c = -0,90078328981723237598
 
-    int32_t val = (int32_t)adc * 391;
+    int32_t val = (int32_t)adc * 391 - 9001;
     val /= 100;
     return (int16_t)val;
 }
