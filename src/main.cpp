@@ -62,7 +62,24 @@ void handle_command(uint8_t cmd, uint16_t& data)
     case 10:
         scontroller.pid_controller.maximum = data;
         scontroller.pid_controller.sum_max = (scontroller.pid_controller.maximum*64) / scontroller.pid_controller.kI;
+    case 11:
+        scontroller.set_weak(WheelPosition::FrontLeft,data); //Field weakening
         break;
+    case 12:
+        scontroller.set_weak(WheelPosition::FrontRight,data);
+        break;
+    case 13:
+        scontroller.set_weak(WheelPosition::RearLeft,data);
+        break;
+    case 14:
+        scontroller.set_weak(WheelPosition::RearRight,data);
+        break;
+    case 15:
+        if(data > 2)
+            break;
+        scontroller.set_mode((DriveMode)data);
+        break;
+
     }
 }
 

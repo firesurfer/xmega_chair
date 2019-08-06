@@ -28,13 +28,13 @@ void SpeedController::update()
         uart_counter++;
         if(uart_counter > 500)
         {
-             pmanager.lock();
-             uart_counter = 0;
+            pmanager.lock();
+            uart_counter = 0;
         }
         //First -> get angle in 1/100 degree
         int32_t angle = adc_to_angle(adc_poti.lastResult(2));
         //Low pass
-        const int32_t filter = 30;
+        const int32_t filter = 25;
         last_angle = last_angle * (100-filter) + angle * filter;
         last_angle /= 100;
         if(abs(last_angle) > 5000)
@@ -45,7 +45,7 @@ void SpeedController::update()
             itoa(last_angle, buffer,10);
             uartc0.transmit_it(buffer);
             uartc0.transmit_it("\n");
-            
+
         }
 
         //PID Controller
@@ -57,11 +57,26 @@ void SpeedController::update()
         speed_left_front = -speed_base +diff_speed;
         speed_right_front = -speed_base -diff_speed;
 
-        //Limit to a maximum value
-        speed_left_rear = limit(speed_left_rear, limit_before_sending);
-        speed_right_rear = limit(speed_right_rear, limit_before_sending);
-        speed_left_front = limit(speed_left_front, limit_before_sending);
-        speed_right_front = limit(speed_right_front, limit_before_sending);
+        //Limit to a maximum value -> And do mode specific stuff
+        if(drive_mode == DriveMode::FrontSteering)
+        {
+            speed_left_rear = limit(speed_left_rear, limit_before_sending);
+            speed_right_rear = limit(speed_right_rear, limit_before_sending);
+            speed_left_front = limit(speed_left_front, limit_before_sending);
+            speed_right_front = limit(speed_right_front, limit_before_sending);
+        }
+        else if(drive_mode == DriveMode::DifferentialDrive)
+        {
+
+        }
+        else if(drive_mode == DriveMode::CombinedDrive)
+        {
+            int32_t boost = (angle  * speed_base) / 100;
+            speed_left_rear = limit(speed_left_rear + boost, limit_before_sending);
+            speed_right_rear = limit(speed_right_rear - boost, limit_before_sending);
+            speed_left_front = limit(speed_left_front, limit_before_sending);
+            speed_right_front = limit(speed_right_front, limit_before_sending);
+        }
 
         //1 - rear, 2 - front
         //Send and adapt signs
@@ -69,7 +84,7 @@ void SpeedController::update()
         if(!send_mutex){
             if(send_counter >= 0)
             {
-               /* char buffer[5];
+                /* char buffer[5];
                 itoa(speed_left_rear, buffer,10);
                 uartc0.transmit_it(buffer);
                 uartc0.transmit_it(":");
@@ -135,6 +150,16 @@ void SpeedController::set_angle(int16_t angle)
         angle = -angle_limit;
     }
     pid_controller.target = angle;
+}
+
+void SpeedController::set_weak(WheelPosition pos, uint16_t val)
+{
+
+}
+
+void SpeedController::set_mode(DriveMode mode)
+{
+    drive_mode = mode;
 }
 
 void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)

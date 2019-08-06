@@ -6,6 +6,21 @@
 #include "adc.h"
 
 #include <math.h>
+
+enum class WheelPosition
+{
+    FrontLeft = 0,
+    FrontRight = 1,
+    RearLeft = 2,
+    RearRight = 3
+};
+enum class DriveMode
+{
+    FrontSteering = 0,
+    DifferentialDrive = 1,
+    CombinedDrive = 2
+};
+
 class SpeedController
 {
 public:
@@ -33,6 +48,17 @@ public:
      */
     void set_angle(int16_t angle);
     /**
+     * @brief set_weak - set field weakening of specified motor
+     * @param pos
+     * @param val
+     */
+    void set_weak(WheelPosition pos, uint16_t val);
+    /**
+     * @brief set_mode - sets the drive mode
+     * @param mode
+     */
+    void set_mode(DriveMode mode);
+    /**
      * @brief send_packet - send data packet in style: | # | cmd | high data | low data | checksum |
      * @param command
      * @param data
@@ -59,9 +85,11 @@ private:
     int16_t speed_base;
     int32_t last_angle = 0;
 
+    DriveMode drive_mode = DriveMode::FrontSteering;
+
     /*Limits*/
     const int16_t speed_limit = 1000;
-    const int16_t angle_limit = 4500;
+    const int16_t angle_limit = 4200;
     const int16_t limit_before_sending = 1000;
 
     bool m_locked = true;
