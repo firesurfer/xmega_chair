@@ -6,6 +6,7 @@
 #include "adc.h"
 
 #include <math.h>
+#include "uart_parser.h"
 
 enum class WheelPosition
 {
@@ -98,6 +99,9 @@ private:
 
     void uart_callback_left(uint8_t c);
     void uart_callback_right(uint8_t c);
+
+    UartParser parser_left;
+    UartParser parser_right;
 
     uint16_t uart_counter = 0;
     uint8_t send_counter = 0;

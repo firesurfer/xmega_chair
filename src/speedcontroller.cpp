@@ -8,7 +8,9 @@ extern Uart uartc0;
 SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_left(uleft),
     uart_right(uright),
-    adc_poti(apoti)
+    adc_poti(apoti),
+    parser_left(uleft),
+    parser_right(uright)
 {
     pid_controller.kP = 12;
     pid_controller.kI = 0;
