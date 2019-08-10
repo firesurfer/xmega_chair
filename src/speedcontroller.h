@@ -84,6 +84,7 @@ private:
     int16_t speed_right_front;
     int16_t speed_right_rear;
     int16_t speed_base;
+    int16_t set_angle;
     int32_t last_angle = 0;
 
     volatile DriveMode drive_mode = DriveMode::FrontSteering;
