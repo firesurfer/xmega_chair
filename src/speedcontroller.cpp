@@ -1,8 +1,10 @@
 #include "speedcontroller.h"
 #include "powermanager.h"
+#include "led.h"
 
 extern PowerManager pmanager;
 extern Uart uartc0;
+
 SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_left(uleft),
     uart_right(uright),
@@ -16,9 +18,10 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     pid_controller.target = 0;
     pid_controller.sum_max = (pid_controller.maximum*64) / pid_controller.kI;
 
-    Uart::rx_handler_t rx= reinterpret_cast<Uart::rx_handler_t>(&SpeedController::uart_callback);
-    uart_left.set_rx_handler(rx,this);
-    uart_right.set_rx_handler(rx,this);
+    Uart::rx_handler_t rx_left= reinterpret_cast<Uart::rx_handler_t>(&SpeedController::uart_callback_left);
+    Uart::rx_handler_t rx_right= reinterpret_cast<Uart::rx_handler_t>(&SpeedController::uart_callback_right);
+    uart_left.set_rx_handler(rx_left,this);
+    uart_right.set_rx_handler(rx_right,this);
 }
 
 void SpeedController::update()
@@ -71,7 +74,7 @@ void SpeedController::update()
         }
         else if(drive_mode == DriveMode::CombinedDrive)
         {
-            int32_t boost = (angle  * speed_base) / 100;
+            int32_t boost = (pid_controller.target  * speed_base) / 10000;
             speed_left_rear = limit(speed_left_rear + boost, limit_before_sending);
             speed_right_rear = limit(speed_right_rear - boost, limit_before_sending);
             speed_left_front = limit(speed_left_front, limit_before_sending);
@@ -98,7 +101,7 @@ void SpeedController::update()
                 uartc0.transmit_it(buffer);
                 uartc0.transmit_it("\n");*/
                 send_mutex=true;
-                send_packet(1,speed_left_rear, uart_left);
+                send_packet(1, speed_left_rear, uart_left);
                 send_packet(2, -speed_left_front, uart_left);
 
                 send_packet(1, -speed_right_rear, uart_right);
@@ -200,7 +203,13 @@ int16_t SpeedController::limit(int16_t val, int16_t limit)
     return val;
 }
 
-void SpeedController::uart_callback(uint8_t c)
+void SpeedController::uart_callback_left(uint8_t c)
 {
-    uart_counter = 0;
+     uart_counter = 0;
 }
+
+void SpeedController::uart_callback_right(uint8_t c)
+{
+     uart_counter = 0;
+}
+

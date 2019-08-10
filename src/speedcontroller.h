@@ -85,7 +85,7 @@ private:
     int16_t speed_base;
     int32_t last_angle = 0;
 
-    DriveMode drive_mode = DriveMode::FrontSteering;
+    volatile DriveMode drive_mode = DriveMode::CombinedDrive;
 
     /*Limits*/
     const int16_t speed_limit = 1000;
@@ -96,7 +96,8 @@ private:
     volatile bool send_mutex=false;
     int16_t limit(int16_t val, int16_t limit);
 
-    void uart_callback(uint8_t c);
+    void uart_callback_left(uint8_t c);
+    void uart_callback_right(uint8_t c);
 
     uint16_t uart_counter = 0;
     uint8_t send_counter = 0;

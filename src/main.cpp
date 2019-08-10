@@ -76,7 +76,9 @@ void handle_command(uint8_t cmd, uint16_t& data)
         break;
     case 15:
         if(data > 2)
+        {
             break;
+        }
         scontroller.set_mode((DriveMode)data);
         break;
 
@@ -131,7 +133,7 @@ int main(void)
     uartc0.transmit_it("Hello world");
     while(1)
     {
-        led1.toggle();
+       // led1.toggle();
         _delay_ms(100);
         pmanager.task_switches();
        
