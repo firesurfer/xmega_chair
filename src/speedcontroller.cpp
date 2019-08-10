@@ -57,8 +57,8 @@ void SpeedController::update()
         speed_left_rear = speed_base;
         speed_right_rear = speed_base;
         //Front wheel -> controlled -> speed offset
-        speed_left_front = -speed_base +diff_speed;
-        speed_right_front = -speed_base -diff_speed;
+        speed_left_front = speed_base +diff_speed;
+        speed_right_front = speed_base -diff_speed;
 
         //Limit to a maximum value -> And do mode specific stuff
         if(drive_mode == DriveMode::FrontSteering)
@@ -70,6 +70,12 @@ void SpeedController::update()
         }
         else if(drive_mode == DriveMode::DifferentialDrive)
         {
+            pid_controller.target = 0;
+            int32_t boost = (set_angle) / 10;
+            speed_left_rear = limit(speed_left_rear + boost, limit_before_sending);
+            speed_right_rear = limit(speed_right_rear - boost, limit_before_sending);
+            speed_left_front = limit(speed_left_front + boost, limit_before_sending);
+            speed_right_front = limit(speed_right_front - boost, limit_before_sending);
 
         }
         else if(drive_mode == DriveMode::CombinedDrive)
@@ -101,10 +107,10 @@ void SpeedController::update()
                 uartc0.transmit_it(buffer);
                 uartc0.transmit_it("\n");*/
                 send_mutex=true;
-                send_packet(1, speed_left_rear, uart_left);
+                send_packet(1, -speed_left_rear, uart_left);
                 send_packet(2, -speed_left_front, uart_left);
 
-                send_packet(1, -speed_right_rear, uart_right);
+                send_packet(1, speed_right_rear, uart_right);
                 send_packet(2, speed_right_front, uart_right);
                 send_mutex=false;
                 send_counter = 0;
@@ -151,6 +157,11 @@ void SpeedController::set_angle(int16_t angle)
     else if(angle < -angle_limit)
     {
         angle = -angle_limit;
+    }
+    if(drive_mode == DriveMode::DifferentialDrive){
+        pid_controller.target = 0;
+        set_angle = angle;
+        return;
     }
     pid_controller.target = angle;
 }
