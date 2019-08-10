@@ -85,7 +85,7 @@ private:
     int16_t speed_base;
     int32_t last_angle = 0;
 
-    volatile DriveMode drive_mode = DriveMode::CombinedDrive;
+    volatile DriveMode drive_mode = DriveMode::FrontSteering;
 
     /*Limits*/
     const int16_t speed_limit = 1000;

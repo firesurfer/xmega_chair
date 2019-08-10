@@ -80,6 +80,11 @@ void handle_command(uint8_t cmd, uint16_t& data)
             break;
         }
         scontroller.set_mode((DriveMode)data);
+        if((DriveMode)data == DriveMode::CombinedDrive)
+            led1.set();
+        else {
+            led1.clear();
+        }
         break;
 
     }
