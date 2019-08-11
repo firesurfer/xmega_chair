@@ -24,18 +24,21 @@ Led led3(PORTE,2);
 Led led4(PORTE,3);
 UartParser cmdparser(uartc0);
 
+bool locked = true;
 void handle_command(void* obj,uint8_t cmd, uint16_t& data)
 {
     switch (cmd) {
     case 0:
         scontroller.lock();
         pmanager.lock();
+        locked = true;
         break;
     case 1:
         scontroller.lock();
         break;
     case 2:
         pmanager.unlock();
+        locked = false;
         break;
     case 3:
         scontroller.unlock();
@@ -115,12 +118,12 @@ void setup_counter()
 
 void setup_watchdog()
 {
-      CCP = CCP_IOREG_gc;
-      WDT.CTRL = WDT_PER_512CLK_gc | WDT_ENABLE_bm | WDT_CEN_bm ;
-      while(  WDT.STATUS & WDT_SYNCBUSY_bm )
-      {
+    CCP = CCP_IOREG_gc;
+    WDT.CTRL = WDT_PER_512CLK_gc | WDT_ENABLE_bm | WDT_CEN_bm ;
+    while(  WDT.STATUS & WDT_SYNCBUSY_bm )
+    {
 
-      }
+    }
 }
 
 int main(void)
@@ -128,7 +131,7 @@ int main(void)
     setup_clock();
     cmdparser.set_command_handler(handle_command, nullptr);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
-   // setup_watchdog();
+    // setup_watchdog();
     WDT_Reset();
     setup_counter();
     pmanager.lock();
@@ -139,11 +142,11 @@ int main(void)
     uartc0.transmit_it("Hello world");
     while(1)
     {
-       // led1.toggle();
+
         _delay_ms(100);
         pmanager.task_switches();
-       
-        scontroller.send_speed_to_pc();
+        if(!locked)
+            scontroller.send_speed_to_pc();
         WDT_Reset();
     }
 }

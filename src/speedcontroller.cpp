@@ -273,17 +273,18 @@ void SpeedController::parser_callback_left(uint8_t cmd, uint16_t &data)
 
 void SpeedController::parser_callback_right(uint8_t cmd, uint16_t &data)
 {
-    led1.toggle();
+
     if(cmd == 10)
     {
 
         //front
-        speed_right_front_m = (int16_t)data;
+        speed_right_front_m = -(int16_t)data;
     }
     else if(cmd == 11)
     {
+          led1.toggle();
         //rear
-        speed_right_rear_m = (int16_t)data;
+        speed_right_rear_m = -(int16_t)data;
     }
 }
 
