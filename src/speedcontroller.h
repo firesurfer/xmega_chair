@@ -73,6 +73,7 @@ public:
      */
     static int16_t adc_to_angle(int16_t adc);
 
+    void send_speed_to_pc();
     PidController pid_controller;
 private:
     Uart& uart_left;
@@ -84,7 +85,7 @@ private:
     int16_t speed_right_front;
     int16_t speed_right_rear;
     int16_t speed_base;
-    int16_t set_angle;
+    int16_t angle_set = 0;
     int32_t last_angle = 0;
 
     volatile DriveMode drive_mode = DriveMode::FrontSteering;
@@ -106,6 +107,14 @@ private:
 
     uint16_t uart_counter = 0;
     uint8_t send_counter = 0;
+
+    void parser_callback_left(uint8_t cmd, uint16_t& data);
+    void parser_callback_right(uint8_t cmd, uint16_t& data);
+
+    int16_t speed_left_front_m;
+    int16_t speed_left_rear_m;
+    int16_t speed_right_front_m;
+    int16_t speed_right_rear_m;
 };
 
 #endif // SPEEDCONTROLLER_H

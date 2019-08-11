@@ -4,7 +4,7 @@
 
 extern PowerManager pmanager;
 extern Uart uartc0;
-
+extern Led led1;
 SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
     uart_left(uleft),
     uart_right(uright),
@@ -22,8 +22,15 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
 
     Uart::rx_handler_t rx_left= reinterpret_cast<Uart::rx_handler_t>(&SpeedController::uart_callback_left);
     Uart::rx_handler_t rx_right= reinterpret_cast<Uart::rx_handler_t>(&SpeedController::uart_callback_right);
+
     uart_left.set_rx_handler(rx_left,this);
     uart_right.set_rx_handler(rx_right,this);
+
+    UartParser::CommandHandler handler_left = reinterpret_cast<UartParser::CommandHandler>(&SpeedController::parser_callback_left);
+    UartParser::CommandHandler handler_right = reinterpret_cast<UartParser::CommandHandler>(&SpeedController::parser_callback_right);
+
+    parser_left.set_command_handler(handler_left,this);
+    parser_right.set_command_handler(handler_right,this);
 }
 
 void SpeedController::update()
@@ -73,7 +80,7 @@ void SpeedController::update()
         else if(drive_mode == DriveMode::DifferentialDrive)
         {
             pid_controller.target = 0;
-            int32_t boost = (set_angle) / 10;
+            int32_t boost = (angle_set) / 10;
             speed_left_rear = limit(speed_left_rear + boost, limit_before_sending);
             speed_right_rear = limit(speed_right_rear - boost, limit_before_sending);
             speed_left_front = limit(speed_left_front + boost, limit_before_sending);
@@ -162,7 +169,7 @@ void SpeedController::set_angle(int16_t angle)
     }
     if(drive_mode == DriveMode::DifferentialDrive){
         pid_controller.target = 0;
-        set_angle = angle;
+        angle_set = angle;
         return;
     }
     pid_controller.target = angle;
@@ -170,7 +177,20 @@ void SpeedController::set_angle(int16_t angle)
 
 void SpeedController::set_weak(WheelPosition pos, uint16_t val)
 {
-
+    switch (pos) {
+    case WheelPosition::FrontLeft:
+        send_packet(3,val,uart_left );
+        break;
+    case WheelPosition::FrontRight:
+        send_packet(3,val,uart_right );
+        break;
+    case WheelPosition::RearLeft:
+        send_packet(4,val,uart_left );
+        break;
+    case WheelPosition::RearRight:
+        send_packet(4,val,uart_right );
+        break;
+    }
 }
 
 void SpeedController::set_mode(DriveMode mode)
@@ -207,6 +227,14 @@ int16_t SpeedController::adc_to_angle(int16_t adc)
     return (int16_t)val;
 }
 
+void SpeedController::send_speed_to_pc()
+{
+    send_packet(15, speed_left_front_m,uartc0);
+    send_packet(16, speed_left_rear_m,uartc0);
+    send_packet(17, speed_right_front_m,uartc0);
+    send_packet(18, speed_right_rear_m,uartc0);
+}
+
 int16_t SpeedController::limit(int16_t val, int16_t limit)
 {
     if(val > limit)
@@ -218,11 +246,44 @@ int16_t SpeedController::limit(int16_t val, int16_t limit)
 
 void SpeedController::uart_callback_left(uint8_t c)
 {
-     uart_counter = 0;
+    uart_counter = 0;
+    parser_left.rx_handler(c);
 }
 
 void SpeedController::uart_callback_right(uint8_t c)
 {
-     uart_counter = 0;
+    uart_counter = 0;
+    parser_right.rx_handler(c);
+}
+
+void SpeedController::parser_callback_left(uint8_t cmd, uint16_t &data)
+{
+
+    if(cmd == 10)
+    {
+        //front
+        speed_left_front_m = (int16_t)data;
+    }
+    else if(cmd == 11)
+    {
+        //rear
+        speed_left_rear_m = (int16_t)data;
+    }
+}
+
+void SpeedController::parser_callback_right(uint8_t cmd, uint16_t &data)
+{
+    led1.toggle();
+    if(cmd == 10)
+    {
+
+        //front
+        speed_right_front_m = (int16_t)data;
+    }
+    else if(cmd == 11)
+    {
+        //rear
+        speed_right_rear_m = (int16_t)data;
+    }
 }
 

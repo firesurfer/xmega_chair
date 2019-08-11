@@ -24,7 +24,7 @@ Led led3(PORTE,2);
 Led led4(PORTE,3);
 UartParser cmdparser(uartc0);
 
-void handle_command(uint8_t cmd, uint16_t& data)
+void handle_command(void* obj,uint8_t cmd, uint16_t& data)
 {
     switch (cmd) {
     case 0:
@@ -90,6 +90,7 @@ void handle_command(uint8_t cmd, uint16_t& data)
     }
 }
 
+
 void setup_clock()
 {
     CCP = CCP_IOREG_gc;
@@ -125,7 +126,7 @@ void setup_watchdog()
 int main(void)
 {
     setup_clock();
-    cmdparser.set_command_handler(handle_command);
+    cmdparser.set_command_handler(handle_command, nullptr);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
    // setup_watchdog();
     WDT_Reset();
@@ -142,7 +143,7 @@ int main(void)
         _delay_ms(100);
         pmanager.task_switches();
        
-        
+        scontroller.send_speed_to_pc();
         WDT_Reset();
     }
 }

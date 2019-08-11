@@ -26,8 +26,7 @@ UartParser::UartParser(Uart &uart):
 
 void UartParser::rx_handler(char c)
 {
-    static uint8_t buf[5];
-    static uint8_t index = 0;
+
 
     switch (index) {
     case 0:
@@ -48,7 +47,10 @@ void UartParser::rx_handler(char c)
             //if(checksum == buf[4])
             {
                 uint16_t data = buf[3] | (uint16_t)buf[2] << 8;
-                m_command_handler(buf[1],data);
+                if(m_command_handler != nullptr)
+                {
+                    m_command_handler(m_command_handler_obj, buf[1],data);
+                }
             }
             index = 0;
         }
@@ -58,7 +60,9 @@ void UartParser::rx_handler(char c)
     }
 }
 
-void UartParser::set_command_handler(CommandHandler func)
+
+void UartParser::set_command_handler(UartParser::CommandHandler func, void *obj)
 {
-     m_command_handler = func;
+    m_command_handler = func;
+    m_command_handler_obj = obj;
 }

@@ -24,12 +24,19 @@
 class UartParser
 {
 public:
-    typedef  void (*CommandHandler)(uint8_t, uint16_t&);
+    typedef  void (*CommandHandler)(void*,uint8_t, uint16_t&);
+
     UartParser(Uart& uart);
     void rx_handler(char c);
     void send_command(uint8_t command, uint16_t data);
-    void set_command_handler(CommandHandler func);
+
+    void set_command_handler(CommandHandler func, void* obj);
 private:
     Uart& m_uart;
-    CommandHandler m_command_handler;
+    CommandHandler m_command_handler = nullptr;
+    void * m_command_handler_obj = nullptr;
+    uint8_t buf[5];
+    uint8_t index = 0;
 };
+
+
