@@ -65,7 +65,7 @@ public:
      * @param data
      * @param uart
      */
-    void send_packet(uint8_t command, uint16_t data, Uart &uart);
+    void send_packet(uint8_t command, uint16_t data, Uart &uart, bool dochecksum = true);
     /**
      * @brief adc_to_angle - convert adc value to angle in 1/100 degree - fixed comma arithmethic
      * @param adc

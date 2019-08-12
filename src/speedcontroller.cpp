@@ -183,7 +183,7 @@ void SpeedController::set_mode(DriveMode mode)
     drive_mode = mode;
 }
 
-void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
+void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart, bool dochecksum)
 {
     uint8_t buffer[5];
     buffer[0] = '#';
@@ -192,12 +192,15 @@ void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
     buffer[3] = data & 0xFF;
 
     //Calculate checksum with xor
-    uint8_t checksum = buffer[0];
-    for(uint8_t i = 1; i < 4;i++)
+    if(dochecksum)
     {
-        checksum ^= buffer[i];
+        uint8_t checksum = buffer[0];
+        for(uint8_t i = 1; i < 4;i++)
+        {
+            checksum ^= buffer[i];
+        }
+        buffer[4] = checksum;
     }
-    buffer[4] = checksum;
 
     //Transmit -> interrupt based
     uart.transmit_it(buffer,5);
@@ -214,10 +217,10 @@ int16_t SpeedController::adc_to_angle(int16_t adc)
 
 void SpeedController::send_speed_to_pc()
 {
-    send_packet(15, speed_left_front_m,uartc0);
-    send_packet(16, speed_left_rear_m,uartc0);
-    send_packet(17, speed_right_front_m,uartc0);
-    send_packet(18, speed_right_rear_m,uartc0);
+    send_packet(15, speed_left_front_m,uartc0,false);
+    send_packet(16, speed_left_rear_m,uartc0,false);
+    send_packet(17, speed_right_front_m,uartc0,false);
+    send_packet(18, speed_right_rear_m,uartc0,false);
 }
 
 int16_t SpeedController::limit(int16_t val, int16_t limit)
