@@ -4,18 +4,18 @@ PidController::PidController():sum(0),last_diff(0),target(0){
 
 }
 
-int16_t PidController::update(int32_t value)
+int16_t PidController::update(int16_t value)
 {
     //Regelabweichung
-    int32_t diff = target - value;
+    int16_t diff = target - value;
 
     //Regler update
-    int32_t update = kP * diff;
+    int32_t update = (int32_t)kP * diff;
     if (kI != 0)
-        update += sum * kI ;
+        update += (int32_t)sum * kI ;
     if (kD != 0)
     {
-        update += (diff - last_diff) * kD;
+        update += (diff - last_diff) * (int32_t)kD;
         //Letzte differenz für D Anteil sichern
         last_diff = diff;
     }

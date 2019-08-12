@@ -102,19 +102,6 @@ void SpeedController::update()
         if(!send_mutex){
             if(send_counter >= 0)
             {
-                /* char buffer[5];
-                itoa(speed_left_rear, buffer,10);
-                uartc0.transmit_it(buffer);
-                uartc0.transmit_it(":");
-                itoa(-speed_left_front, buffer,10);
-                uartc0.transmit_it(buffer);
-                uartc0.transmit_it(":");
-                itoa(-speed_right_rear, buffer,10);
-                uartc0.transmit_it(buffer);
-                uartc0.transmit_it(":");
-                itoa(speed_right_front, buffer,10);
-                uartc0.transmit_it(buffer);
-                uartc0.transmit_it("\n");*/
                 send_mutex=true;
                 send_packet(1, -speed_left_rear, uart_left);
                 send_packet(2, -speed_left_front, uart_left);
@@ -125,9 +112,7 @@ void SpeedController::update()
                 send_counter = 0;
             }
         }
-
     }
-
 }
 
 void SpeedController::lock()
@@ -258,33 +243,25 @@ void SpeedController::uart_callback_right(uint8_t c)
 
 void SpeedController::parser_callback_left(uint8_t cmd, uint16_t &data)
 {
-
     if(cmd == 10)
-    {
-        //front
+    {   //front
         speed_left_front_m = (int16_t)data;
     }
     else if(cmd == 11)
-    {
-        //rear
+    {   //rear
         speed_left_rear_m = (int16_t)data;
     }
 }
 
 void SpeedController::parser_callback_right(uint8_t cmd, uint16_t &data)
 {
-
     if(cmd == 10)
-    {
-
-        //front
+    {   //front
         speed_right_front_m = -(int16_t)data;
     }
     else if(cmd == 11)
-    {
-          led1.toggle();
-        //rear
+    {   //rear
+        led1.toggle();
         speed_right_rear_m = -(int16_t)data;
     }
 }
-
