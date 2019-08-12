@@ -69,7 +69,7 @@ private:
     rx_handler_t rx_handler = nullptr;
     void *rx_handler_obj = nullptr;
 
-    ringbuf_t<10> tx_buf;
+    ringbuf_t<32> tx_buf;
 
 };
 
