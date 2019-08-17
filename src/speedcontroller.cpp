@@ -144,7 +144,7 @@ void SpeedController::set_speed(int16_t speed)
         speed = speed_limit;
     if(speed < -speed_limit)
         speed = -speed_limit;
-    send_packet(2, 0, uart_right);
+
     speed_base = speed;
 }
 
