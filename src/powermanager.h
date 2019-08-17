@@ -30,5 +30,4 @@ private:
 
     bool left_on = false;
     bool right_on = false;
-
 };

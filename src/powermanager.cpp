@@ -20,7 +20,6 @@ void PowerManager::task_switches()
     {
         if(m_switch_port.IN & (1<<m_switch_left))
         {
-
             _delay_ms(10);
             if(m_switch_port.IN & (1<<m_switch_left))
             {
@@ -28,20 +27,17 @@ void PowerManager::task_switches()
                 {
                     led3.clear();
                     m_power_port.OUTCLR = (1<<m_power_left);
-
                 }
             }
 
         }
         else {
-
             led3.set();
             m_power_port.OUTSET = (1<<m_power_left);
         }
 
         if(m_switch_port.IN & (1<<m_switch_right))
         {
-
             _delay_ms(10);
             if(m_switch_port.IN & (1<<m_switch_right))
             {
@@ -49,10 +45,8 @@ void PowerManager::task_switches()
                 {
                     led4.clear();
                     m_power_port.OUTCLR = (1<<m_power_right);
-
                 }
             }
-
         }
         else {
             m_power_port.OUTSET = (1<<m_power_right);

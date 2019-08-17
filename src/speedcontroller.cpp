@@ -58,7 +58,6 @@ void SpeedController::update()
             itoa(last_angle, buffer,10);
             uartc0.transmit_it(buffer);
             uartc0.transmit_it("\n");
-
         }
 
         //PID Controller
@@ -86,7 +85,6 @@ void SpeedController::update()
             speed_right_rear = limit(speed_right_rear - boost, limit_before_sending);
             speed_left_front = limit(speed_left_front + boost, limit_before_sending);
             speed_right_front = limit(speed_right_front - boost, limit_before_sending);
-
         }
         else if(drive_mode == DriveMode::CombinedDrive)
         {
