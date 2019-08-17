@@ -131,7 +131,7 @@ int main(void)
     setup_clock();
     cmdparser.set_command_handler(handle_command, nullptr);
     PMIC.CTRL = PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
-    // setup_watchdog();
+    setup_watchdog();
     WDT_Reset();
     setup_counter();
     pmanager.lock();

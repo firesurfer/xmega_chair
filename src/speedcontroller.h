@@ -97,7 +97,6 @@ private:
     const int16_t limit_before_sending = 1000;
 
     bool m_locked = true;
-    volatile bool send_mutex=false;
     int16_t limit(int16_t val, int16_t limit);
 
     void uart_callback_left(uint8_t c);

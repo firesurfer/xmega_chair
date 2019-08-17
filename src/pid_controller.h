@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 
+//template<typename kP, typename kD, typename kI>
 class PidController{
 public:
     PidController();//the constructor could get the PID params from the eeprom. the setter of kP,kI,kD could store the values in eeprom
@@ -15,6 +16,6 @@ public:
     uint16_t kP;
     uint16_t kD;
     uint16_t kI;
-    int16_t maximum = 1000;
+    int16_t maximum = 350;
     int16_t sum_max;
 };

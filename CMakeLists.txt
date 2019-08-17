@@ -9,8 +9,8 @@ set(AVR_TARGET_DEVICE atxmega32a4u)
 include_directories("/usr/lib/avr/include")
 
 # Set the GCC flags required
-set(CMAKE_C_FLAGS " -Wall -std=gnu11 -O2 -gdwarf-2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -save-temps -mmcu=${AVR_TARGET_DEVICE}")
-set(CMAKE_CXX_FLAGS " -Wall -std=c++11 -O2 -gdwarf-2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -save-temps -mmcu=${AVR_TARGET_DEVICE}")
+set(CMAKE_C_FLAGS " -Wall -std=gnu11 -O2 -flto -gdwarf-2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -save-temps -mmcu=${AVR_TARGET_DEVICE}")
+set(CMAKE_CXX_FLAGS " -Wall -std=c++11 -O2 -flto -gdwarf-2 -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -save-temps -mmcu=${AVR_TARGET_DEVICE}")
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 

@@ -53,11 +53,6 @@ void SpeedController::update()
         if(abs(last_angle) > 5000)
         {
             pmanager.lock();
-            uartc0.transmit_it("Angle power off\n");
-            char buffer[5];
-            itoa(last_angle, buffer,10);
-            uartc0.transmit_it(buffer);
-            uartc0.transmit_it("\n");
         }
 
         //PID Controller
@@ -98,18 +93,13 @@ void SpeedController::update()
         //1 - rear, 2 - front
         //Send and adapt signs
         send_counter++;
-        if(!send_mutex){
-            if(send_counter >= 0)
-            {
-                send_mutex=true;
-                send_packet(1, -speed_left_rear, uart_left);
-                send_packet(2, -speed_left_front, uart_left);
-
-                send_packet(1, speed_right_rear, uart_right);
-                send_packet(2, speed_right_front, uart_right);
-                send_mutex=false;
-                send_counter = 0;
-            }
+        if(send_counter >= 0)
+        {
+            send_packet(1, -speed_left_rear, uart_left);
+            send_packet(2, -speed_left_front, uart_left);
+            send_packet(1, speed_right_rear, uart_right);
+            send_packet(2, speed_right_front, uart_right);
+            send_counter = 0;
         }
     }
 }
@@ -118,10 +108,8 @@ void SpeedController::lock()
 {
     m_locked = true;
 
-    send_mutex=true;
     send_packet(1,0, uart_left);
     send_packet(2, 0, uart_left);
-
     send_packet(1, 0, uart_right);
     send_packet(2, 0, uart_right);
 
@@ -130,7 +118,6 @@ void SpeedController::lock()
     speed_left_front_m = 0;
     speed_right_front_m = 0;
     send_speed_to_pc();
-    send_mutex=false;
 }
 
 void SpeedController::unlock()
@@ -198,7 +185,6 @@ void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
     buffer[3] = data & 0xFF;
 
     //Calculate checksum with xor
-
     uint8_t checksum = buffer[0];
     for(uint8_t i = 1; i < 4;i++)
     {
@@ -206,15 +192,14 @@ void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
     }
     buffer[4] = checksum;
 
-
     //Transmit -> interrupt based
     uart.transmit_it(buffer,5);
 }
 
 int16_t SpeedController::adc_to_angle(int16_t adc)
-{   //m = 0,03916449086161879896
+{
+    //m = 0,03916449086161879896
     //c = -0,90078328981723237598
-
     int32_t val = (int32_t)adc * 391 - 9001;
     val /= 100;
     return (int16_t)val;

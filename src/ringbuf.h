@@ -27,10 +27,38 @@ struct ringbuf_t{
     volatile T back;
     uint8_t data[SIZE];
 
-    inline BOOL full(){return (front+1)&MASK==back;}
-    inline BOOL empty(){return front==back;}
-    inline BOOL push_back(uint8_t d){if(full())return 0;front=(T)(front+(T)1)&(T)MASK;data[front]=d;return 1;}
-    inline BOOL push_wait(uint8_t d){T f=(front+1)&MASK;while(f==back);front=f;data[f]=d;return 1;}
-    inline BOOL pop_front(uint8_t &d){T b=back;if(front==b)return 0;back=b=(b+1)&MASK;d=data[b];return 1;}//cache back with register variable, because interrupt
+    inline BOOL full()
+    {
+        return ((front+1)&MASK)==back;
+    }
+    inline BOOL empty()
+    {
+        return front==back;
+    }
+    inline BOOL push_back(uint8_t d)
+    {
+        if(full())
+            return 0;
+        front=(T)(front+(T)1)&(T)MASK;
+        data[front]=d;
+        return 1;
+    }
+    inline BOOL push_wait(uint8_t d)
+    {
+        T f=(front+1)&MASK;
+        while(f==back);
+        front=f;
+        data[f]=d;
+        return 1;
+    }
+    inline BOOL pop_front(uint8_t &d)
+    {
+        T b=back;
+        if(front==b)
+            return 0;
+        back=b=(b+1)&MASK;
+        d=data[b];
+        return 1;
+    }//cache back with register variable, because interrupt
     inline void clear(){front=0;back=0;}
 };
