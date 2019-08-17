@@ -35,6 +35,12 @@ SpeedController::SpeedController(Uart &uleft, Uart &uright, ADC &apoti):
 
 void SpeedController::update()
 {
+    //First -> get angle in 1/100 degree
+    int32_t angle = adc_to_angle(adc_poti.lastResult(2));
+    //Low pass
+    const int32_t filter = 25;
+    last_angle = last_angle * (100-filter) + angle * filter;
+    last_angle /= 100;
     if(!m_locked)
     {
         uart_counter++;
@@ -43,12 +49,7 @@ void SpeedController::update()
             pmanager.lock();
             uart_counter = 0;
         }
-        //First -> get angle in 1/100 degree
-        int32_t angle = adc_to_angle(adc_poti.lastResult(2));
-        //Low pass
-        const int32_t filter = 25;
-        last_angle = last_angle * (100-filter) + angle * filter;
-        last_angle /= 100;
+
         if(abs(last_angle) > 5000)
         {
             pmanager.lock();
@@ -125,6 +126,12 @@ void SpeedController::lock()
 
     send_packet(1, 0, uart_right);
     send_packet(2, 0, uart_right);
+
+    speed_left_rear_m = 0;
+    speed_right_rear_m = 0;
+    speed_left_front_m = 0;
+    speed_right_front_m = 0;
+    send_speed_to_pc();
     send_mutex=false;
 }
 
@@ -139,6 +146,7 @@ void SpeedController::set_speed(int16_t speed)
         speed = speed_limit;
     if(speed < -speed_limit)
         speed = -speed_limit;
+    send_packet(2, 0, uart_right);
     speed_base = speed;
 }
 
@@ -183,7 +191,7 @@ void SpeedController::set_mode(DriveMode mode)
     drive_mode = mode;
 }
 
-void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart, bool dochecksum)
+void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart)
 {
     uint8_t buffer[5];
     buffer[0] = '#';
@@ -192,15 +200,14 @@ void SpeedController::send_packet(uint8_t command, uint16_t data, Uart& uart, bo
     buffer[3] = data & 0xFF;
 
     //Calculate checksum with xor
-    if(dochecksum)
+
+    uint8_t checksum = buffer[0];
+    for(uint8_t i = 1; i < 4;i++)
     {
-        uint8_t checksum = buffer[0];
-        for(uint8_t i = 1; i < 4;i++)
-        {
-            checksum ^= buffer[i];
-        }
-        buffer[4] = checksum;
+        checksum ^= buffer[i];
     }
+    buffer[4] = checksum;
+
 
     //Transmit -> interrupt based
     uart.transmit_it(buffer,5);
@@ -217,10 +224,11 @@ int16_t SpeedController::adc_to_angle(int16_t adc)
 
 void SpeedController::send_speed_to_pc()
 {
-    send_packet(15, speed_left_front_m,uartc0,false);
-    send_packet(16, speed_left_rear_m,uartc0,false);
-    send_packet(17, speed_right_front_m,uartc0,false);
-    send_packet(18, speed_right_rear_m,uartc0,false);
+    send_packet(15, speed_left_front_m,uartc0);
+    send_packet(16, speed_left_rear_m,uartc0);
+    send_packet(17, speed_right_front_m,uartc0);
+    send_packet(18, speed_right_rear_m,uartc0);
+    send_packet(19, (int16_t)last_angle,uartc0);
 }
 
 int16_t SpeedController::limit(int16_t val, int16_t limit)
